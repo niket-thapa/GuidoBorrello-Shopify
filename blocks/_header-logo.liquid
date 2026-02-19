@@ -3,22 +3,7 @@
 {% liquid
   assign block_settings = block.settings
   assign use_inverse_logo = false
-
-  if section.settings.enable_transparent_header_home and template.name == 'index' and section.settings.home_color_scheme == 'inverse'
-    assign use_inverse_logo = true
-  elsif section.settings.enable_transparent_header_product and template.name == 'product' and section.settings.product_color_scheme == 'inverse'
-    assign use_inverse_logo = true
-  elsif section.settings.enable_transparent_header_collection and template.name == 'collection' and section.settings.collection_color_scheme == 'inverse'
-    assign use_inverse_logo = true
-  endif
-
-  if use_inverse_logo
-    if settings.logo_inverse != blank
-      assign inverse_logo = settings.logo_inverse
-    else
-      assign inverse_logo = settings.logo
-    endif
-  endif
+  assign inverse_logo = nil
 %}
 
 {% comment %}

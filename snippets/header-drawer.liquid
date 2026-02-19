@@ -60,10 +60,10 @@
       on:click="/toggle"
     >
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--open">
-        {{- 'icon-menu.svg' | inline_asset_content -}}
+        {% render 'icon-gb-menu' %}
       </span>
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-        {{- 'icon-close.svg' | inline_asset_content -}}
+        {% render 'icon-gb-close' %}
       </span>
     </summary>
     <div
@@ -80,7 +80,7 @@
         on:click="/close"
       >
         <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-          {{- 'icon-close.svg' | inline_asset_content -}}
+          {% render 'icon-gb-close' %}
         </span>
       </button>
       <nav
@@ -296,7 +296,7 @@
                             on:click="header-drawer/close"
                           >
                             <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-                              {{- 'icon-close.svg' | inline_asset_content -}}
+                              {% render 'icon-gb-close' %}
                             </span>
                           </button>
                         </div>
@@ -671,7 +671,7 @@
                       on:click="header-drawer/close"
                     >
                       <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-                        {{- 'icon-close.svg' | inline_asset_content -}}
+                        {% render 'icon-gb-close' %}
                       </span>
                     </button>
                   </div>

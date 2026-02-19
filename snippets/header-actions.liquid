@@ -6,8 +6,8 @@
 
 {% capture cart_icon %}
   <cart-icon
-    class="
-      header-actions__cart-icon
+    class=" flex
+      header-actions__cart-icon header-actions__cart-icon--guido
       {% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}
     "
     data-testid="cart-icon"
@@ -16,7 +16,7 @@
       class="svg-wrapper"
       aria-hidden="true"
     >
-      {{ 'icon-cart.svg' | inline_asset_content }}
+      {% render 'icon-gb-cart' %}
     </span>
 
     {% render 'cart-bubble', limit: 100, live_region: true %}
@@ -116,7 +116,7 @@
     {% endcapture %}
 
     <cart-drawer-component
-      class="cart-drawer"
+      class="cart-drawer items-center flex"
       {{ block.shopify_attributes }}
       {% if settings.auto_open_cart_drawer %}
         auto-open
@@ -567,6 +567,20 @@
     --cart-bubble-right: 2.5px;
 
     position: relative;
+  }
+
+  .header-actions__cart-icon--guido {
+    color: var(--color-foreground);
+    transition: color 0.15s ease;
+  }
+
+  .header-actions__cart-icon--guido:hover {
+    color: rgb(var(--color-accent-rgb, var(--color-foreground-rgb)));
+  }
+
+  .header-actions__action.action__cart.header-actions__cart-icon--guido,
+  .header-actions__action .header-actions__cart-icon--guido {
+    color: inherit;
   }
 
   .header-actions__cart-icon .cart-bubble {

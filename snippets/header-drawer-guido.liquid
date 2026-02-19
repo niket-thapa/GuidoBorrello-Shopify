@@ -1,0 +1,107 @@
+{% comment %}
+  Guido mobile drawer – flat link list, no block. Use with section settings only.
+  @param {object} linklist - The linklist to render
+  @param {string} [drawer_color_scheme] - Color scheme class for drawer panel (e.g. scheme-1)
+{% endcomment %}
+<script src="{{ 'header-drawer.js' | asset_url }}" type="module" fetchpriority="low"></script>
+<header-drawer class="header-drawer header-drawer--guido">
+  <details id="Details-menu-drawer-container" data-skip-node-update="true" class="menu-drawer-container" ref="details" scroll-lock>
+    <summary class="header__icon header__icon--menu header__icon--summary header-drawer__trigger" aria-label="{{ 'accessibility.menu' | t }}" aria-expanded="false" aria-controls="mobile-nav" on:click="/toggle">
+      <span class="header-drawer__icon header-drawer__icon--open" aria-hidden="true">{% render 'icon-gb-menu' %}</span>
+      <span class="header-drawer__icon header-drawer__icon--close" aria-hidden="true">{% render 'icon-gb-close' %}</span>
+    </summary>
+    <div ref="menuDrawer" class="menu-drawer menu-drawer--guido color-{{ drawer_color_scheme | default: 'scheme-1' }}">
+      <button type="button" class="menu-drawer--guido__close" aria-label="{{ 'actions.close' | t }}" on:click="/close">
+        <span class="svg-wrapper">{% render 'icon-gb-close' %}</span>
+      </button>
+      <nav id="mobile-nav" class="menu-drawer--guido__nav" aria-label="{{ 'accessibility.menu' | t }}">
+        {% if linklist and linklist.links.size > 0 %}
+          <ul class="menu-drawer--guido__list" role="list">
+            {% for link in linklist.links %}
+              <li>
+                <a href="{{ link.url }}" class="menu-drawer--guido__link{% if link.active %} menu-drawer--guido__link--active{% endif %}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </nav>
+    </div>
+    <div class="menu-drawer__backdrop" on:click="/close"></div>
+  </details>
+</header-drawer>
+
+{% stylesheet %}
+  .header-drawer--guido .header-drawer__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .header-drawer--guido .header-drawer__icon--close { display: none; }
+  .header-drawer--guido details[open] .header-drawer__icon--open { display: none; }
+  .header-drawer--guido details[open] .header-drawer__icon--close { display: block; }
+  .menu-drawer--guido {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 25rem;
+    height: 100dvh;
+    z-index: var(--layer-menu-drawer);
+    background-color: var(--color-background);
+    border-right: 1px solid var(--color-border);
+    box-shadow: var(--shadow-drawer);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.25s ease, visibility 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.5rem 1.5rem;
+  }
+  .menu-open .menu-drawer--guido {
+    transform: translateX(0);
+    visibility: visible;
+  }
+  .menu-drawer--guido__close {
+    align-self: flex-end;
+    padding: 0.5rem;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .menu-drawer--guido__close .svg-wrapper { display: flex; width: 22px; height: 22px; }
+  .menu-drawer--guido__nav { margin-top: 0.5rem; }
+  .menu-drawer--guido__list { list-style: none; margin: 0; padding: 0; }
+  .menu-drawer--guido__list li { margin: 0; }
+  .menu-drawer--guido__link {
+    display: block;
+    padding: 0.75rem 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .menu-drawer--guido__link:hover,
+  .menu-drawer--guido__link--active { color: var(--color-foreground); }
+  .menu-drawer__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    z-index: calc(var(--layer-menu-drawer) - 1);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+  .menu-open .menu-drawer__backdrop { opacity: 1; visibility: visible; }
+  @media (min-width: 750px) {
+    .header-drawer--guido { display: none; }
+  }
+{% endstylesheet %}

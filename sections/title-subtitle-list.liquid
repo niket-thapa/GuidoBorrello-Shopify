@@ -1,0 +1,98 @@
+{% liquid
+  assign title = section.settings.title
+  assign subtitle = section.settings.subtitle
+  assign aos_margin = section.settings.aos_margin | default: '-60'
+%}
+
+<!-- Three lines – same structure and animation as reference -->
+<section class="py-16 bg-card overflow-hidden title-subtitle-list-section" {{ section.shopify_attributes }}>
+  <div class="max-w-7xl mx-auto px-6 text-center aos-group" data-aos-margin="{{ aos_margin }}">
+    {% if title != blank %}
+      <h2 class="aos font-serif text-3xl md:text-4xl mb-3" data-aos-delay="0">{{ title | escape }}</h2>
+    {% endif %}
+    {% if subtitle != blank %}
+      <p class="aos text-muted-foreground text-sm mb-12" data-aos-delay="1">{{ subtitle | escape }}</p>
+    {% endif %}
+    {% if section.blocks.size > 0 %}
+      <div class="aos flex justify-center gap-12 md:gap-20" data-aos-delay="2">
+        {% for block in section.blocks %}
+          {% if block.type == 'line' and block.settings.text != blank %}
+            <div class="text-center" {{ block.shopify_attributes }}>
+              <span class="text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground">{{ block.settings.text | escape }}</span>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+
+{% schema %}
+{
+  "name": "Key points",
+  "tag": "section",
+  "class": "title-subtitle-list-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "info": "Main heading (H2)."
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "info": "Optional text below the title."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "Scroll margin (px)",
+      "default": "-60",
+      "info": "Trigger margin for animate-on-scroll (same as reference)."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "line",
+      "name": "List item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "info": "One line per block. Add blocks to create more lines."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Key points",
+      "settings": {
+        "title": "Tre linee. Tre identità.",
+        "subtitle": "Un solo metodo."
+      },
+      "blocks": [
+        { "type": "line", "settings": { "text": "Verdure" } },
+        { "type": "line", "settings": { "text": "Carne" } },
+        { "type": "line", "settings": { "text": "Pesce" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

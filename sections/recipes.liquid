@@ -1,0 +1,219 @@
+{% liquid
+  assign blog = section.settings.blog
+  assign posts_limit = section.settings.posts_limit | default: 3
+  assign eyebrow = section.settings.eyebrow
+  assign heading = section.settings.heading
+  assign intro = section.settings.intro
+  assign view_all_text = section.settings.view_all_text
+  assign view_all_link = section.settings.view_all_link
+  assign aos_margin = section.settings.aos_margin | default: '-60'
+  assign aos_margin_footer = section.settings.aos_margin_footer | default: '0'
+%}
+
+{% comment %} Le mie ricette – same structure and animation as reference {% endcomment %}
+<section class="py-24 md:py-32 bg-card overflow-hidden recipes-section" {{ section.shopify_attributes }}>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16 aos-group" data-aos-margin="{{ aos_margin }}">
+      {% if eyebrow != blank %}
+        <p class="aos text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground mb-3" data-aos-delay="0">{{ eyebrow | escape }}</p>
+      {% endif %}
+      {% if heading != blank %}
+        <h2 class="aos font-serif text-3xl md:text-4xl" data-aos-delay="1">{{ heading | escape }}</h2>
+      {% endif %}
+      {% if intro != blank %}
+        <div class="aos mt-4 text-muted-foreground text-sm max-w-lg mx-auto leading-relaxed recipes-section__intro" data-aos-delay="2">{{ intro }}</div>
+      {% endif %}
+    </div>
+    <div class="grid md:grid-cols-3 gap-8 aos-stagger-15" data-aos-margin="{{ aos_margin }}">
+      {% if blog != blank %}
+        {% paginate blog.articles by posts_limit %}
+          {% for article in blog.articles %}
+            <a href="{{ article.url }}" class="aos block group" data-aos-delay="{{ forloop.index0 }}">
+              <div class="aspect-square overflow-hidden rounded-sm mb-5">
+                {% if article.image %}
+                  {% assign article_alt = article.image.alt | default: article.title %}
+                  {{
+                    article.image
+                    | image_url: width: 600
+                    | image_tag:
+                      width: article.image.width,
+                      widths: '300, 400, 500, 600',
+                      sizes: '(min-width: 768px) 33vw, 100vw',
+                      alt: article_alt,
+                      class: 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out',
+                      loading: 'lazy'
+                  }}
+                {% else %}
+                  <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
+                {% endif %}
+              </div>
+              <h3 class="font-serif text-xl mb-2 group-hover:text-accent transition-colors">{{ article.title | escape }}</h3>
+              {% if article.excerpt != blank %}
+                <p class="text-muted-foreground text-sm leading-relaxed mb-4">
+                  {{ article.excerpt | strip_html | truncate: 120 }}
+                </p>
+              {% endif %}
+              <div class="flex items-center gap-5 text-muted-foreground flex-wrap">
+                {% if article.metafields.custom.prep_time != blank %}
+                  <span class="flex items-center gap-1.5 text-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    {{ article.metafields.custom.prep_time | escape }}
+                  </span>
+                {% endif %}
+                {% if article.metafields.custom.servings != blank %}
+                  <span class="flex items-center gap-1.5 text-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    {{ article.metafields.custom.servings | escape }}
+                  </span>
+                {% endif %}
+                {% if article.metafields.custom.difficulty != blank %}
+                  <span class="flex items-center gap-1.5 text-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/></svg>
+                    {{ article.metafields.custom.difficulty | escape }}
+                  </span>
+                {% endif %}
+              </div>
+            </a>
+          {% endfor %}
+        {% endpaginate %}
+      {% else %}
+        {% for i in (1..posts_limit) %}
+          <a href="#" class="aos block group" data-aos-delay="{{ forloop.index0 }}">
+            <div class="aspect-square overflow-hidden rounded-sm mb-5">
+              <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
+            </div>
+            <h3 class="font-serif text-xl mb-2 group-hover:text-accent transition-colors">Recipe title</h3>
+            <p class="text-muted-foreground text-sm leading-relaxed mb-4">Recipe excerpt. Select a blog to show posts.</p>
+            <div class="flex items-center gap-5 text-muted-foreground">
+              <span class="flex items-center gap-1.5 text-xs">— min</span>
+              <span class="flex items-center gap-1.5 text-xs">— persone</span>
+              <span class="flex items-center gap-1.5 text-xs">—</span>
+            </div>
+          </a>
+        {% endfor %}
+      {% endif %}
+    </div>
+    {% if view_all_text != blank %}
+      <div class="text-center mt-12 aos-group" data-aos-margin="{{ aos_margin_footer }}">
+        <a href="{{ view_all_link | default: '#' }}" class="aos aos-fade inline-block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-foreground border-b border-foreground/40 pb-1 hover:border-foreground transition-colors">
+          {{ view_all_text | escape }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+
+{% style %}
+  .recipes-section__intro p {
+    margin: 0;
+  }
+  .recipes-section .grid {
+    grid-template-areas: none;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Recipes",
+  "tag": "section",
+  "class": "recipes-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Ispirazione in cucina",
+      "info": "Small uppercase label above the heading."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Le mie ricette",
+      "info": "Section heading (H2)."
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro",
+      "default": "<p>Con i sughi Guido Borrello bastano pochi minuti per portare in tavola un piatto da chef. Ecco come.</p>",
+      "info": "Paragraph below the heading (max-width, centered)."
+    },
+    {
+      "type": "header",
+      "content": "Blog"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Recipe posts are taken from this blog. Create metafields on articles: custom.prep_time, custom.servings, custom.difficulty."
+    },
+    {
+      "type": "range",
+      "id": "posts_limit",
+      "label": "Posts to show",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "View all link"
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View all text",
+      "default": "Tutte le ricette",
+      "info": "Leave blank to hide the link."
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View all link",
+      "info": "e.g. blog URL or /pages/ricette."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "Scroll margin (px) – header & grid",
+      "default": "-60",
+      "info": "Trigger margin for animate-on-scroll."
+    },
+    {
+      "type": "text",
+      "id": "aos_margin_footer",
+      "label": "Scroll margin (px) – view all",
+      "default": "0",
+      "info": "Trigger margin for the bottom link."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recipes",
+      "settings": {
+        "eyebrow": "Ispirazione in cucina",
+        "heading": "Le mie ricette",
+        "intro": "<p>Con i sughi Guido Borrello bastano pochi minuti per portare in tavola un piatto da chef. Ecco come.</p>",
+        "posts_limit": 3,
+        "view_all_text": "Tutte le ricette"
+      }
+    }
+  ]
+}
+{% endschema %}

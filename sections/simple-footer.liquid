@@ -1,0 +1,242 @@
+{% liquid
+  assign bg_color = section.settings.background_color
+  assign text_color = section.settings.text_color
+  assign border_color = section.settings.border_color
+  assign brand_heading = section.settings.brand_heading
+  assign brand_description = section.settings.brand_description
+  assign contact_heading = section.settings.contact_heading
+  assign contact_content = section.settings.contact_content
+  assign company_heading = section.settings.company_heading
+  assign company_content = section.settings.company_content
+  assign copyright_text = section.settings.copyright_text
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign current_year = 'now' | date: '%Y'
+  if copyright_text != blank
+    assign copyright_output = copyright_text | replace: '{year}', current_year
+  endif
+%}
+
+<footer
+  class="simple-footer"
+  style="
+    {% if bg_color != blank %}background-color: {{ bg_color }};{% endif %}
+    {% if text_color != blank %}color: {{ text_color }};{% endif %}
+    padding-top: {{ padding_top }}px;
+    padding-bottom: {{ padding_bottom }}px;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="simple-footer__inner max-w-7xl mx-auto px-6">
+    <div class="simple-footer__grid grid md:grid-cols-3 gap-12">
+      {% if brand_heading != blank or brand_description != blank %}
+        <div class="simple-footer__column">
+          {% if brand_heading != blank %}
+            <h3 class="simple-footer__brand-heading font-serif text-xl mb-4">{{ brand_heading | escape }}</h3>
+          {% endif %}
+          {% if brand_description != blank %}
+            <p class="simple-footer__brand-desc text-sm opacity-70 leading-relaxed">{{ brand_description | escape }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+      {% if contact_heading != blank or contact_content != blank %}
+        <div class="simple-footer__column">
+          {% if contact_heading != blank %}
+            <h4 class="simple-footer__block-heading text-[10px] font-sans font-medium uppercase tracking-[0.2em] opacity-50 mb-4">{{ contact_heading | escape }}</h4>
+          {% endif %}
+          {% if contact_content != blank %}
+            <div class="simple-footer__block-content space-y-2 text-sm opacity-70">
+              {% assign contact_lines = contact_content | newline_to_br | split: '<br />' %}
+              {% for line in contact_lines %}
+                {% assign trimmed = line | strip %}
+                {% if trimmed != blank %}
+                  <p>
+                    {% if trimmed contains '@' %}
+                      <a href="mailto:{{ trimmed | escape }}" class="simple-footer__link">{{ trimmed | escape }}</a>
+                    {% elsif trimmed contains 'http://' or trimmed contains 'https://' %}
+                      <a href="{{ trimmed | escape }}" class="simple-footer__link" target="_blank" rel="noopener">{{ trimmed | escape }}</a>
+                    {% elsif trimmed contains 'www.' %}
+                      <a href="https://{{ trimmed | escape }}" class="simple-footer__link" target="_blank" rel="noopener">{{ trimmed | escape }}</a>
+                    {% else %}
+                      {{ trimmed | escape }}
+                    {% endif %}
+                  </p>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+      {% if company_heading != blank or company_content != blank %}
+        <div class="simple-footer__column">
+          {% if company_heading != blank %}
+            <h4 class="simple-footer__block-heading text-[10px] font-sans font-medium uppercase tracking-[0.2em] opacity-50 mb-4">{{ company_heading | escape }}</h4>
+          {% endif %}
+          {% if company_content != blank %}
+            <div class="simple-footer__block-content space-y-2 text-sm opacity-70">
+              {% assign company_lines = company_content | newline_to_br | split: '<br />' %}
+              {% for line in company_lines %}
+                {% assign trimmed = line | strip %}
+                {% if trimmed != blank %}
+                  <p>{{ trimmed | escape }}</p>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+    {% if copyright_output != blank %}
+      <div
+        class="simple-footer__copyright mt-16 pt-8 text-center"
+        style="{% if border_color != blank %}border-top-color: {{ border_color }};{% endif %}"
+      >
+        <p class="text-xs opacity-40">{{ copyright_output }}</p>
+      </div>
+    {% endif %}
+  </div>
+</footer>
+
+{% style %}
+  .simple-footer {
+    display: block;
+    --font-h4--line-height: 1.5;
+  }
+  .simple-footer  .grid {
+    grid-template-areas: none;
+  }
+  .simple-footer__link {
+    color: inherit;
+    text-decoration: none;
+  }
+  .simple-footer__link:hover {
+    text-decoration: underline;
+  }
+  .simple-footer__copyright {
+    border-top-width: 1px;
+    border-top-style: solid;
+  }
+  .simple-footer__copyright:not([style*="border-top-color"]) {
+    border-top-color: currentColor;
+  }
+  .simple-footer__copyright p {
+    margin: 0;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Simple footer",
+  "tag": "footer",
+  "class": "simple-footer-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Copyright border",
+      "info": "Top border above copyright."
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "header",
+      "content": "Column 1 – Brand"
+    },
+    {
+      "type": "text",
+      "id": "brand_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "brand_description",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Column 2 – Contact"
+    },
+    {
+      "type": "text",
+      "id": "contact_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "contact_content",
+      "label": "Content",
+      "info": "One line per paragraph (e.g. email, website)."
+    },
+    {
+      "type": "header",
+      "content": "Column 3 – Company"
+    },
+    {
+      "type": "text",
+      "id": "company_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "company_content",
+      "label": "Content",
+      "info": "One line per paragraph."
+    },
+    {
+      "type": "header",
+      "content": "Copyright"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright text",
+      "info": "Use {year} for current year (e.g. © {year} Company name)."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Simple footer",
+      "settings": {
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    }
+  ]
+}
+{% endschema %}

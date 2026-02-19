@@ -1,0 +1,174 @@
+{% liquid
+  assign collection = section.settings.collection
+  if collection == blank
+    assign collection = collections.all
+  endif
+  assign max_products = section.settings.max_products | default: 4
+  assign eyebrow = section.settings.eyebrow
+  assign heading = section.settings.heading
+  assign add_label = section.settings.add_label
+  assign aos_margin = section.settings.aos_margin | default: '-60'
+%}
+
+{% comment %} Home Our Products – same structure and animation as reference (id=prodotti) {% endcomment %}
+<section id="{{ section.settings.section_id }}" class="py-24 md:py-32 home-our-products-section" {{ section.shopify_attributes }}>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16 aos-group" data-aos-margin="{{ aos_margin }}">
+      {% if eyebrow != blank %}
+        <p class="aos text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground mb-3" data-aos-delay="0">{{ eyebrow | escape }}</p>
+      {% endif %}
+      {% if heading != blank %}
+        <h2 class="aos font-serif text-3xl md:text-4xl" data-aos-delay="1">{{ heading | escape }}</h2>
+      {% endif %}
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 aos-stagger-10" data-aos-margin="{{ aos_margin }}">
+      {% if collection != blank %}
+        {% for product in collection.products limit: max_products %}
+          <div class="aos group" data-aos-delay="{{ forloop.index0 }}">
+            <a href="{{ product.url }}" class="block">
+              <div class="aspect-[3/4] overflow-hidden bg-card rounded-sm">
+                {% if product.featured_media %}
+                  {{
+                    product.featured_media
+                    | image_url: width: 600
+                    | image_tag:
+                      width: product.featured_media.width,
+                      widths: '300, 400, 500, 600',
+                      sizes: '(min-width: 768px) 25vw, 50vw',
+                      alt: product.featured_media.alt | default: product.title,
+                      class: 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out',
+                      loading: 'lazy'
+                  }}
+                {% else %}
+                  <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
+                {% endif %}
+              </div>
+              <div class="mt-4 space-y-1">
+                {% assign product_collection = product.collections.first | default: collection %}
+                <p class="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground">{{ product_collection.title | escape }}</p>
+                <h3 class="font-serif text-lg leading-tight">{{ product.title | escape }}</h3>
+                {% if product.metafields.custom.product_highlights != blank %}
+                  <p class="text-sm text-muted-foreground">{{ product.metafields.custom.product_highlights | escape }}</p>
+                {% endif %}
+              </div>
+            </a>
+            <div class="mt-3 flex items-center justify-between">
+              <span class="font-serif text-base">{{ product.price | money }}</span>
+              <a href="{{ product.url }}" class="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-accent hover:text-foreground transition-colors border-b border-accent hover:border-foreground pb-0.5">{{ add_label | default: 'Aggiungi' | escape }}</a>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        {% for i in (1..max_products) %}
+          <div class="aos group" data-aos-delay="{{ forloop.index0 }}">
+            <a href="#" class="block">
+              <div class="aspect-[3/4] overflow-hidden bg-card rounded-sm">
+                <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
+              </div>
+              <div class="mt-4 space-y-1">
+                <p class="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground">Collection</p>
+                <h3 class="font-serif text-lg leading-tight">Product {{ forloop.index }}</h3>
+                <p class="text-sm text-muted-foreground">Product description</p>
+              </div>
+            </a>
+            <div class="mt-3 flex items-center justify-between">
+              <span class="font-serif text-base">{{ 1490 | money }}</span>
+              <a href="#" class="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-accent hover:text-foreground transition-colors border-b border-accent hover:border-foreground pb-0.5">{{ add_label | default: 'Aggiungi' | escape }}</a>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+
+{% style %}
+  .home-our-products-section .grid {
+    grid-template-areas: none;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Home Our Products",
+  "tag": "section",
+  "class": "home-our-products-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "section_id",
+      "label": "Section ID",
+      "default": "prodotti",
+      "info": "Anchor for links (e.g. #prodotti)."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Collezione",
+      "info": "Small uppercase label above the heading."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "I nostri prodotti",
+      "info": "Main section heading (H2)."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Leave unset to show all products."
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Max products",
+      "min": 1,
+      "max": 16,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Add button label",
+      "default": "Aggiungi",
+      "info": "Link text next to price."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "Scroll margin (px)",
+      "default": "-60",
+      "info": "Trigger margin for animate-on-scroll (same as reference)."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home Our Products",
+      "settings": {
+        "section_id": "prodotti",
+        "eyebrow": "Collezione",
+        "heading": "I nostri prodotti",
+        "max_products": 4,
+        "add_label": "Aggiungi"
+      }
+    }
+  ]
+}
+{% endschema %}

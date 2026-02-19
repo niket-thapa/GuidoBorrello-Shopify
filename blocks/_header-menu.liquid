@@ -18,7 +18,8 @@
       data-hydration-key="header-drawer-mobile"
       {{ block.shopify_attributes }}
     >
-      {% render 'header-drawer', linklist: block_settings.menu, data_header_drawer_type: 'mobile-drawer' %}
+      {% assign mobile_menu = linklists[block_settings.menu] %}
+      {% render 'header-drawer', linklist: mobile_menu, data_header_drawer_type: 'mobile-drawer' %}
     </div>
 
   {% when 'navigation_bar' %}
@@ -700,10 +701,29 @@
   "tag": null,
   "settings": [
     {
+      "type": "header",
+      "content": "Menus"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_left",
+      "label": "Menu (left)",
+      "default": "main-menu",
+      "info": "Desktop navigation shown to the left of the logo."
+    },
+    {
+      "type": "link_list",
+      "id": "menu_right",
+      "label": "Menu (right)",
+      "default": "main-menu",
+      "info": "Desktop navigation shown to the right of the logo."
+    },
+    {
       "type": "link_list",
       "id": "menu",
-      "label": "t:settings.menu",
-      "default": "main-menu"
+      "label": "Menu (mobile)",
+      "default": "main-menu",
+      "info": "Links shown in the mobile drawer menu."
     },
     {
       "type": "color_scheme",
