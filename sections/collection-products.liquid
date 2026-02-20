@@ -1,0 +1,181 @@
+{% liquid
+  comment
+    Collection products – alternating layout (same as static reference prodotti.html).
+    Renders only when collection is in scope (e.g. on collection template).
+    Data: collection title (eyebrow), product title, custom.product_highlights, custom.excerpt or first paragraph of description,
+    custom.ingredients (list), price, link to product. All accent colors from custom.product_color (hex).
+  endcomment
+  assign aos_margin = section.settings.aos_margin | default: '-80'
+  assign cta_text = section.settings.cta_text | default: 'Visualizza dettaglio'
+  assign default_hex = section.settings.fallback_product_color | default: '#8B7355'
+  assign max_products = section.settings.max_products
+  if max_products == nil or max_products == 0
+    assign max_products = 50
+  endif
+%}
+
+{% if collection != blank and collection.products.size > 0 %}
+  <section class="pb-24 md:pb-32 collection-products-section" {{ section.shopify_attributes }}>
+    <div class="max-w-7xl mx-auto px-6 space-y-16 md:space-y-24">
+      {% for product in collection.products limit: max_products %}
+        {% liquid
+          assign product_color_hex = product.metafields.custom.product_color | default: default_hex
+          assign product_color_hex = product_color_hex | strip
+          if product_color_hex == blank
+            assign product_color_hex = default_hex
+          endif
+          unless product_color_hex contains '#'
+            assign product_color_hex = default_hex
+          endunless
+
+          assign highlights = product.metafields.custom.product_highlights | strip
+          assign excerpt_metafield = product.metafields.custom.excerpt
+          assign excerpt_fallback = blank
+          if excerpt_metafield == blank
+            assign first_para = product.description | split: '</p>' | first | strip_html | strip
+            if first_para != blank
+              assign excerpt_fallback = first_para
+            else
+              assign excerpt_fallback = product.description | strip_html | truncate: 250
+            endif
+          endif
+
+          assign ingredients_list = product.metafields.custom.ingredients.value | default: product.metafields.custom.ingredients
+          assign row_mod = forloop.index0 | modulo: 2
+          assign is_even = false
+          if row_mod == 1
+            assign is_even = true
+          endif
+        %}
+        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center aos-group collection-products-card" data-aos-margin="{{ aos_margin }}" style="--product-color: {{ product_color_hex }};">
+          {% comment %} Image block – odd: image first; even: image right (order-2) {% endcomment %}
+          <div class="aos{% if is_even %} md:order-2{% endif %}" data-aos-delay="0">
+            <a href="{{ product.url }}" class="block group">
+              <div class="aspect-[3/4] overflow-hidden rounded-sm relative collection-products-card__img-wrap">
+                {% if product.featured_media %}
+                  {{
+                    product.featured_media
+                    | image_url: width: 800
+                    | image_tag:
+                      loading: 'lazy',
+                      alt: product.featured_media.alt | default: product.title,
+                      class: 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out',
+                      widths: '400, 600, 800',
+                      sizes: '(min-width: 768px) 50vw, 100vw'
+                  }}
+                {% else %}
+                  <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
+                {% endif %}
+                <div class="absolute bottom-0 left-0 right-0 h-1 collection-products-card__bar" style="background-color: var(--product-color);"></div>
+              </div>
+            </a>
+          </div>
+          <div class="aos{% if is_even %} md:order-1{% endif %} flex flex-col justify-center" data-aos-delay="1">
+            {% assign first_tag = product.tags | first %}
+            {% if first_tag != blank %}
+              <p class="text-[10px] font-sans font-medium uppercase tracking-[0.3em] mb-3 collection-products-card__eyebrow" style="color: var(--product-color);">{{ first_tag | escape }}</p>
+            {% endif %}
+            <h2 class="font-serif text-3xl md:text-4xl mb-2">{{ product.title | escape }}</h2>
+            {% if highlights != blank %}
+              <p class="text-muted-foreground text-sm mb-4">{{ highlights | escape }}</p>
+            {% endif %}
+            {% if excerpt_metafield != blank %}
+              <div class="text-muted-foreground leading-relaxed mb-6 max-w-md">{{ excerpt_metafield | metafield_tag }}</div>
+            {% elsif excerpt_fallback != blank %}
+              <p class="text-muted-foreground leading-relaxed mb-6 max-w-md">{{ excerpt_fallback | escape }}</p>
+            {% endif %}
+            {% if ingredients_list != blank %}
+              <div class="flex flex-wrap gap-2 mb-8">
+                {% for item in ingredients_list %}
+                  {% assign tag_label = item.value | default: item | strip %}
+                  {% if tag_label != blank %}
+                    <span class="collection-products-card__tag text-[10px] font-sans uppercase tracking-[0.15em] px-3 py-1.5 rounded-full border">{{ tag_label | escape }}</span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+            <div class="flex items-center gap-6">
+              <span class="font-serif text-2xl">{{ product.price | money }}</span>
+              <a href="{{ product.url }}" class="collection-products-card__cta inline-flex items-center gap-2 text-[10px] font-sans font-medium uppercase tracking-[0.2em] px-5 py-2.5 rounded-sm text-white transition-all hover:opacity-90 hover:gap-3" style="background-color: var(--product-color);">
+                {{ cta_text | escape }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  <script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+{% endif %}
+
+{% style %}
+  .collection-products-section .grid {
+    grid-template-areas: none;
+  }
+  .collection-products-section .collection-products-card__img-wrap {
+    background-color: color-mix(in srgb, var(--product-color) 8%, transparent);
+  }
+  .collection-products-section .collection-products-card__bar {
+    background-color: var(--product-color);
+  }
+  .collection-products-section .collection-products-card__tag {
+    border-color: color-mix(in srgb, var(--product-color) 30%, transparent);
+    color: var(--product-color);
+    background-color: color-mix(in srgb, var(--product-color) 6%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .collection-products-section .aos {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Collection products",
+  "tag": "section",
+  "class": "collection-products-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Maximum products to show",
+      "min": 2,
+      "max": 50,
+      "step": 1,
+      "default": 50,
+      "info": "Shopify returns up to 50 products per collection when not using pagination."
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "AOS margin",
+      "default": "-80",
+      "info": "Offset for scroll animation (e.g. -80)."
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button label",
+      "default": "Visualizza dettaglio"
+    },
+    {
+      "type": "text",
+      "id": "fallback_product_color",
+      "label": "Fallback product color (hex)",
+      "default": "#8B7355",
+      "info": "Used when product metafield custom.product_color is empty."
+    }
+  ]
+}
+{% endschema %}

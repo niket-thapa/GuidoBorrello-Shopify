@@ -1,0 +1,106 @@
+{% liquid
+  assign eyebrow = section.settings.eyebrow
+  assign heading = section.settings.heading
+  assign use_collection_title = section.settings.use_collection_title
+  assign description = section.settings.description
+  assign aos_margin = section.settings.aos_margin | default: '0'
+
+  if use_collection_title and collection != blank
+    assign display_heading = collection.title
+  else
+    assign display_heading = heading
+  endif
+%}
+
+{% comment %} Collection intro – same structure and animation as reference (prodotti.html) {% endcomment %}
+<section class="py-20 md:py-28 text-center collection-intro-section" {{ section.shopify_attributes }}>
+  <div class="aos-group" data-aos-margin="{{ aos_margin }}">
+    {% if eyebrow != blank %}
+      <p class="aos text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground mb-3" data-aos-delay="0">{{ eyebrow | escape }}</p>
+    {% endif %}
+    {% if display_heading != blank %}
+      <h1 class="aos font-serif text-4xl md:text-5xl lg:text-6xl mb-4" data-aos-delay="1">{{ display_heading | escape }}</h1>
+    {% endif %}
+    {% if description != blank %}
+      <p class="aos text-muted-foreground text-sm md:text-base max-w-lg mx-auto leading-relaxed collection-intro-section__description" data-aos-delay="2">{{ description | escape }}</p>
+    {% endif %}
+  </div>
+</section>
+
+<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+
+{% style %}
+  .collection-intro-section__description {
+    display: block;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .collection-intro-section .aos {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Collection intro",
+  "tag": "section",
+  "class": "collection-intro-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Collezione",
+      "info": "Small uppercase label above the heading."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "I nostri prodotti",
+      "info": "Used when \"Use collection title\" is off."
+    },
+    {
+      "type": "checkbox",
+      "id": "use_collection_title",
+      "label": "Use collection title as heading",
+      "default": false,
+      "info": "When on, the current collection title is shown (e.g. on collection template)."
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Quattro ricette della tradizione italiana, preparate con metodo artigianale e ingredienti selezionati.",
+      "info": "Paragraph below the heading (max-w-lg, centered)."
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "AOS scroll margin (px)",
+      "default": "0",
+      "info": "Trigger margin for animate-on-scroll."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection intro",
+      "settings": {
+        "eyebrow": "Collezione",
+        "heading": "I nostri prodotti",
+        "description": "Quattro ricette della tradizione italiana, preparate con metodo artigianale e ingredienti selezionati.",
+        "aos_margin": "0"
+      }
+    }
+  ]
+}
+{% endschema %}

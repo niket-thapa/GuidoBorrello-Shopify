@@ -687,6 +687,10 @@ video {
   padding-top: 0.375rem;
   padding-bottom: 0.375rem;
 }
+.py-2\.5 {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
@@ -724,6 +728,12 @@ video {
 }
 .pb-20 {
   padding-bottom: 5rem;
+}
+.pb-24 {
+  padding-bottom: 6rem;
+}
+.pb-32 {
+  padding-bottom: 8rem;
 }
 .pl-16 {
   padding-left: 4rem;
@@ -1061,6 +1071,17 @@ video {
   }
   .md\:grid-cols-\[1fr_2fr\] {
     grid-template-columns: 1fr 2fr;
+  }
+  .md\:order-1 {
+    order: 1;
+  }
+  .md\:order-2 {
+    order: 2;
+  }
+  .md\:space-y-24 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(6rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(6rem * var(--tw-space-y-reverse));
   }
 }
 
@@ -1616,7 +1637,9 @@ h6 {
 .recipe-detail-preparation li {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.5s ease-out;
   transition-delay: calc(var(--recipe-li-i, 0) * 0.08s);
 }
 .recipe-detail-ingredients li.recipe-li-in-view,
@@ -1731,6 +1754,11 @@ h6 {
   margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(2rem * var(--tw-space-y-reverse));
 }
+.space-y-16 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(4rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(4rem * var(--tw-space-y-reverse));
+}
 .aspect-video {
   aspect-ratio: 16/9;
 }
@@ -1777,6 +1805,12 @@ h6 {
 .hover\:bg-secondary:hover {
   background-color: hsl(var(--secondary));
 }
+.hover\:gap-3:hover {
+  gap: 0.75rem;
+}
+.hover\:opacity-90:hover {
+  opacity: 0.9;
+}
 .h-\[50vh\] {
   height: 50vh;
 }
@@ -1785,4 +1819,79 @@ h6 {
 }
 .min-h-0 {
   min-height: 0;
+}
+
+/* ==========================================================================
+   Collection products – layout and styles (matches prodotti.html reference)
+   ========================================================================== */
+
+.collection-products-section .max-w-7xl {
+  max-width: 80rem;
+}
+.collection-products-section .mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+.collection-products-section .px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.collection-products-section .space-y-16 > * + * {
+  margin-top: 4rem;
+}
+@media (min-width: 768px) {
+  .collection-products-section .md\:space-y-24 > * + * {
+    margin-top: 6rem;
+  }
+}
+
+.collection-products-section .collection-products-card {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .collection-products-section .collection-products-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3rem;
+  }
+}
+
+.collection-products-section .collection-products-card__img-wrap {
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  border-radius: 0.125rem;
+  position: relative;
+  background-color: color-mix(in srgb, var(--product-color) 12%, transparent);
+}
+.collection-products-section .collection-products-card__bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0.25rem;
+  background-color: var(--product-color);
+}
+.collection-products-section .collection-products-card__eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  margin-bottom: 0.75rem;
+  color: var(--product-color);
+}
+.collection-products-section .collection-products-card__tag {
+  border-width: 1px;
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--product-color) 30%, transparent);
+  color: var(--product-color);
+  background-color: color-mix(in srgb, var(--product-color) 6%, transparent);
+}
+.collection-products-section .collection-products-card__cta {
+  background-color: var(--product-color);
+}
+.collection-products-section .collection-products-card__cta:hover {
+  opacity: 0.9;
+  gap: 0.75rem;
 }
