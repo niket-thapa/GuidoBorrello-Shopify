@@ -1,0 +1,122 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero_sub_page_RD8pkf": {
+      "type": "hero-sub-page",
+      "name": "Sub page hero",
+      "settings": {
+        "image": "shopify://shop_images/brand-story.png",
+        "eyebrow": "Chi siamo",
+        "title": "La storia di Guido Borrello"
+      }
+    },
+    "intro_dht6bY": {
+      "type": "intro",
+      "name": "Intro",
+      "settings": {
+        "logo": "shopify://shop_images/gb-logo.png",
+        "quote": "La qualità non è un dettaglio. È il metodo.",
+        "paragraph": "<p>Guido Borrello nasce dalla passione di uno chef per la cucina tradizionale italiana e dalla convinzione che le migliori ricette meritino di essere accessibili a tutti, senza scendere a compromessi sulla qualità degli ingredienti e sulla cura della preparazione.</p>",
+        "aos_margin": "-80"
+      }
+    },
+    "timeline_4fmfaQ": {
+      "type": "timeline",
+      "blocks": {
+        "item_yFLM8r": {
+          "type": "item",
+          "settings": {
+            "year": "1989",
+            "title": "Nasce Guido",
+            "description": "<p>Cresce in Campania, circondato dai sapori della cucina napoletana della nonna.</p>"
+          }
+        },
+        "item_VpPhyz": {
+          "type": "item",
+          "settings": {
+            "year": "2008",
+            "title": "La formazione",
+            "description": "<p>Si diploma all'istituto alberghiero e inizia a lavorare nelle cucine di ristoranti stellati tra Napoli e Roma.</p>"
+          }
+        },
+        "item_98M4Fi": {
+          "type": "item",
+          "settings": {
+            "year": "2014",
+            "title": "Le prime sperimentazioni",
+            "description": "<p>Dopo anni di esperienza professionale, inizia a sperimentare con la conservazione delle ricette tradizionali italiane.</p>"
+          }
+        },
+        "item_4CiMit": {
+          "type": "item",
+          "settings": {
+            "year": "2018",
+            "title": "Nasce il progetto",
+            "description": "<p>L'idea di portare la qualità della cucina professionale nelle case, senza compromessi su ingredienti e metodo.</p>"
+          }
+        },
+        "item_peKF8q": {
+          "type": "item",
+          "settings": {
+            "year": "2021",
+            "title": "GB LAB SRL",
+            "description": "<p>Fonda la sua azienda e lancia la prima linea di sughi: tre identità, un solo metodo artigianale.</p>"
+          }
+        },
+        "item_hU7EcP": {
+          "type": "item",
+          "settings": {
+            "year": "2024",
+            "title": "La crescita",
+            "description": "<p>I prodotti raggiungono tavole in tutta Italia. Inizia il servizio di consulenze per ristoratori e appassionati.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "item_yFLM8r",
+        "item_VpPhyz",
+        "item_98M4Fi",
+        "item_4CiMit",
+        "item_peKF8q",
+        "item_hU7EcP"
+      ],
+      "name": "Timeline",
+      "settings": {
+        "eyebrow": "Il percorso",
+        "heading": "Una vita dedicata alla cucina",
+        "header_aos_margin": "",
+        "item_aos_margin": ""
+      }
+    },
+    "story_VcTGnM": {
+      "type": "story",
+      "name": "Story",
+      "settings": {
+        "image_position": "left",
+        "image_animation": "left",
+        "padding_style": "default",
+        "eyebrow": "I nostri valori",
+        "heading": "Tre linee. Tre identità. Un solo metodo.",
+        "paragraph_1": "<p>Ogni sugo nasce da una ricerca approfondita sulla tradizione regionale italiana. Non produciamo in serie: ogni lotto è limitato, ogni ingrediente è selezionato personalmente.</p><p>Nessun conservante, nessun colorante, nessun aroma artificiale. La sicurezza alimentare nasce dal metodo e dalla sterilizzazione, non dalla chimica.</p>",
+        "cta_label": "Scopri i prodotti",
+        "cta_link": "shopify://collections/all",
+        "image": "shopify://shop_images/brand-story-gen.jpg",
+        "aos_margin": ""
+      }
+    }
+  },
+  "order": [
+    "hero_sub_page_RD8pkf",
+    "intro_dht6bY",
+    "timeline_4fmfaQ",
+    "story_VcTGnM"
+  ]
+}

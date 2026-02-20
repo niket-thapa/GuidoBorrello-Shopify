@@ -1,0 +1,152 @@
+{% liquid
+  assign eyebrow = section.settings.eyebrow
+  assign heading = section.settings.heading
+  assign header_margin = section.settings.header_aos_margin
+  assign item_margin = section.settings.item_aos_margin
+  if header_margin == blank
+    assign header_margin = '0'
+  endif
+  if item_margin == blank
+    assign item_margin = '-60'
+  endif
+%}
+
+<!-- Timeline – same structure and animations as reference -->
+<section class="py-20 bg-card overflow-hidden timeline-section" {{ section.shopify_attributes }}>
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="text-center mb-16 aos-group" data-aos-margin="{{ header_margin }}">
+      {% if eyebrow != blank %}
+        <p class="aos text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground mb-3" data-aos-delay="0">
+          {{ eyebrow | escape }}
+        </p>
+      {% endif %}
+      {% if heading != blank %}
+        <h2 class="aos font-serif text-3xl md:text-4xl" data-aos-delay="1">
+          {{ heading | escape }}
+        </h2>
+      {% endif %}
+    </div>
+
+    <div class="relative">
+      <div class="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-border md:-translate-x-px timeline-section__line"></div>
+
+      {% for block in section.blocks %}
+        {% if block.type == 'item' %}
+          {% liquid
+            assign year = block.settings.year
+            assign title = block.settings.title
+            assign description = block.settings.description
+            assign is_even = forloop.index0 | modulo: 2
+          %}
+          <div
+            class="aos relative flex items-start gap-8 mb-16 md:flex-row {% if is_even == 1 %}md:flex-row-reverse{% endif %} {% if forloop.last %}last:mb-0{% endif %}"
+            data-aos-margin="{{ item_margin }}"
+            {{ block.shopify_attributes }}
+          >
+            <div class="absolute left-6 md:left-1/2 w-3 h-3 rounded-full bg-accent border-2 border-background -translate-x-1.5 mt-1.5 z-10 timeline-section__dot"></div>
+            <div class="ml-14 md:ml-0 md:w-[calc(50%-2rem)] {% if is_even == 1 %}md:text-left md:pl-8 md:ml-auto{% else %}md:text-right md:pr-8{% endif %}">
+              {% if year != blank %}
+                <span class="inline-block text-[11px] font-sans font-semibold uppercase tracking-[0.2em] mb-2 text-accent">{{ year | escape }}</span>
+              {% endif %}
+              {% if title != blank %}
+                <h3 class="font-serif text-xl mb-2">{{ title | escape }}</h3>
+              {% endif %}
+              {% if description != blank %}
+                <div class="text-sm text-muted-foreground leading-relaxed timeline-section__richtext">{{ description }}</div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+
+{% style %}
+  .timeline-section__line {
+    pointer-events: none;
+  }
+  .timeline-section__richtext p {
+    margin: 0 0 0.5em;
+  }
+  .timeline-section__richtext p:last-child {
+    margin-bottom: 0;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Timeline",
+  "tag": "section",
+  "class": "timeline-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "info": "Small uppercase label above the heading."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading (H2)",
+      "info": "Main section heading."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "text",
+      "id": "header_aos_margin",
+      "label": "Header scroll margin (px)",
+      "info": "Trigger margin for header (e.g. 0). Leave blank for 0."
+    },
+    {
+      "type": "text",
+      "id": "item_aos_margin",
+      "label": "Items scroll margin (px)",
+      "info": "Trigger margin for timeline items (e.g. -60). Leave blank for -60."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Timeline item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year / label",
+          "info": "e.g. 1989, 2008."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title (H3)"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Timeline",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,331 @@
+{% liquid
+  assign blog = section.settings.blog
+  assign filter_category_label = section.settings.filter_category_label | default: 'Categoria'
+  assign filter_difficulty_label = section.settings.filter_difficulty_label | default: 'Difficoltà'
+  assign all_label = section.settings.all_label | default: 'Tutte'
+  assign empty_message = section.settings.empty_message | default: 'Nessuna ricetta trovata con i filtri selezionati.'
+  assign aos_margin = section.settings.aos_margin | default: '-60'
+
+  assign has_articles = false
+  assign category_seen = ''
+  assign difficulty_seen = ''
+  assign category_list = ''
+  assign difficulty_list = ''
+
+  if blog != blank and blog.articles.size > 0
+    assign has_articles = true
+    for article in blog.articles
+      assign cat = article.metafields.custom.category | strip
+      if cat != blank
+        assign cat_check = cat | prepend: '^^^' | append: '^^^'
+        unless category_seen contains cat_check
+          assign category_seen = category_seen | append: cat_check
+          assign category_list = category_list | append: cat | append: '||'
+        endunless
+      endif
+      assign diff = article.metafields.custom.difficulty | strip
+      if diff != blank
+        assign diff_check = diff | prepend: '^^^' | append: '^^^'
+        unless difficulty_seen contains diff_check
+          assign difficulty_seen = difficulty_seen | append: diff_check
+          assign difficulty_list = difficulty_list | append: diff | append: '||'
+        endunless
+      endif
+    endfor
+  endif
+%}
+
+{% comment %}
+  Recipes grid with filters – same structure and behaviour as reference (ricette.html).
+  Renders only when the selected blog has articles. Uses article title, excerpt,
+  and metafields: custom.category, custom.prep_time, custom.servings, custom.difficulty.
+{% endcomment %}
+
+{% if has_articles %}
+  <section class="py-16 md:py-24 recipes-grid-section" {{ section.shopify_attributes }}>
+    <div class="max-w-7xl mx-auto px-6">
+      {% comment %} Filters (on-load animation) {% endcomment %}
+      <div
+        class="ricette-filters-item flex flex-wrap items-center gap-8 mb-14"
+        id="recipes-filters-{{ section.id }}"
+      >
+        <div class="flex items-center gap-3">
+          <span class="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            {{ filter_category_label | escape }}
+          </span>
+          <div class="flex gap-1.5" id="filter-category-{{ section.id }}">
+            <button
+              type="button"
+              class="filter-btn filter-category text-xs font-sans font-medium px-3 py-1.5 transition-colors bg-foreground text-background"
+              data-value="all"
+              data-section-id="{{ section.id }}"
+            >
+              {{ all_label | escape }}
+            </button>
+            {% assign category_arr = category_list | split: '||' %}
+            {% for cat in category_arr %}
+              {% if cat != blank %}
+                <button
+                  type="button"
+                  class="filter-btn filter-category text-xs font-sans font-medium px-3 py-1.5 transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  data-value="{{ cat | escape }}"
+                  data-section-id="{{ section.id }}"
+                >
+                  {{ cat | escape }}
+                </button>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            {{ filter_difficulty_label | escape }}
+          </span>
+          <div class="flex gap-1.5" id="filter-difficulty-{{ section.id }}">
+            <button
+              type="button"
+              class="filter-btn filter-difficulty text-xs font-sans font-medium px-3 py-1.5 transition-colors bg-foreground text-background"
+              data-value="all"
+              data-section-id="{{ section.id }}"
+            >
+              {{ all_label | escape }}
+            </button>
+            {% assign difficulty_arr = difficulty_list | split: '||' %}
+            {% for diff in difficulty_arr %}
+              {% if diff != blank %}
+                <button
+                  type="button"
+                  class="filter-btn filter-difficulty text-xs font-sans font-medium px-3 py-1.5 transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  data-value="{{ diff | escape }}"
+                  data-section-id="{{ section.id }}"
+                >
+                  {{ diff | escape }}
+                </button>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      {% comment %} Empty state (hidden by default) {% endcomment %}
+      <p
+        id="ricette-empty-{{ section.id }}"
+        class="text-center text-muted-foreground py-16 hidden recipes-grid-empty"
+      >
+        {{ empty_message | escape }}
+      </p>
+
+      {% comment %} Grid – AOS stagger same as reference {% endcomment %}
+      <div
+        id="ricette-grid-{{ section.id }}"
+        class="grid md:grid-cols-3 gap-8 aos-group aos-stagger-15 recipes-grid-list"
+        data-aos-margin="{{ aos_margin }}"
+      >
+        {% for article in blog.articles %}
+          {% liquid
+            assign art_cat = article.metafields.custom.category | strip
+            assign art_diff = article.metafields.custom.difficulty | strip
+            assign art_prep = article.metafields.custom.prep_time | strip
+            assign art_serv = article.metafields.custom.servings | strip
+          %}
+          <a
+            href="{{ article.url }}"
+            class="recipe-card group block aos"
+            data-category="{{ art_cat | escape }}"
+            data-difficulty="{{ art_diff | escape }}"
+            data-aos-delay="{{ forloop.index0 | modulo: 6 }}"
+          >
+            <div class="aspect-square overflow-hidden rounded-sm mb-5">
+              {% if article.image %}
+                {% assign article_alt = article.image.alt | default: article.title %}
+                {{
+                  article.image
+                  | image_url: width: 600
+                  | image_tag:
+                    width: article.image.width,
+                    widths: '300, 400, 500, 600',
+                    sizes: '(min-width: 768px) 33vw, 100vw',
+                    alt: article_alt,
+                    class: 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out',
+                    loading: 'lazy'
+                }}
+              {% else %}
+                <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
+              {% endif %}
+            </div>
+            {% if art_cat != blank %}
+              <span class="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-accent mb-2 block">
+                {{ art_cat | escape }}
+              </span>
+            {% endif %}
+            <h3 class="font-serif text-xl mb-2 group-hover:text-accent transition-colors">
+              {{ article.title | escape }}
+            </h3>
+            {% if article.excerpt != blank %}
+              <p class="text-muted-foreground text-sm leading-relaxed mb-4">
+                {{ article.excerpt | strip_html | truncate: 120 }}
+              </p>
+            {% endif %}
+            <div class="flex items-center gap-5 text-muted-foreground">
+              {% if art_prep != blank %}
+                <span class="flex items-center gap-1.5 text-xs" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  {{ art_prep | escape }}
+                </span>
+              {% endif %}
+              {% if art_serv != blank %}
+                <span class="flex items-center gap-1.5 text-xs" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  {{ art_serv | escape }}
+                </span>
+              {% endif %}
+              {% if art_diff != blank %}
+                <span class="flex items-center gap-1.5 text-xs" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/></svg>
+                  {{ art_diff | escape }}
+                </span>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      var sectionId = '{{ section.id }}';
+      var grid = document.getElementById('ricette-grid-' + sectionId);
+      var empty = document.getElementById('ricette-empty-' + sectionId);
+      var categoryContainer = document.getElementById('filter-category-' + sectionId);
+      var difficultyContainer = document.getElementById('filter-difficulty-' + sectionId);
+      var cards = grid ? grid.querySelectorAll('.recipe-card') : [];
+      var activeCls = ['bg-foreground', 'text-background'];
+      var inactiveCls = ['bg-secondary', 'text-secondary-foreground', 'hover:bg-secondary/80'];
+
+      function setActive(container, value) {
+        if (!container) return;
+        container.querySelectorAll('button').forEach(function (b) {
+          var v = b.getAttribute('data-value');
+          b.classList.remove.apply(b.classList, activeCls.concat(inactiveCls));
+          if (v === value) {
+            b.classList.add.apply(b.classList, activeCls);
+          } else {
+            b.classList.add.apply(b.classList, inactiveCls);
+          }
+        });
+      }
+
+      function filter() {
+        var categoryFilter = (categoryContainer && categoryContainer.querySelector('.bg-foreground')) 
+          ? (categoryContainer.querySelector('.bg-foreground').getAttribute('data-value') || 'all') 
+          : 'all';
+        var difficultyFilter = (difficultyContainer && difficultyContainer.querySelector('.bg-foreground'))
+          ? (difficultyContainer.querySelector('.bg-foreground').getAttribute('data-value') || 'all')
+          : 'all';
+        var visible = 0;
+        cards.forEach(function (card) {
+          var cat = card.getAttribute('data-category') || '';
+          var diff = card.getAttribute('data-difficulty') || '';
+          var matchCat = categoryFilter === 'all' || cat === categoryFilter;
+          var matchDiff = difficultyFilter === 'all' || diff === difficultyFilter;
+          var show = matchCat && matchDiff;
+          card.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+        if (empty) empty.classList.toggle('hidden', visible > 0);
+        if (grid) grid.classList.toggle('hidden', visible === 0);
+      }
+
+      if (categoryContainer) {
+        categoryContainer.querySelectorAll('.filter-category').forEach(function (b) {
+          b.addEventListener('click', function () {
+            setActive(categoryContainer, b.getAttribute('data-value'));
+            filter();
+          });
+        });
+      }
+      if (difficultyContainer) {
+        difficultyContainer.querySelectorAll('.filter-difficulty').forEach(function (b) {
+          b.addEventListener('click', function () {
+            setActive(difficultyContainer, b.getAttribute('data-value'));
+            filter();
+          });
+        });
+      }
+    })();
+  </script>
+
+  <script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+  {% style %}
+    .recipes-grid-section .grid {
+      grid-template-areas: none;
+    }
+  {% endstyle %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Recipes grid",
+  "tag": "section",
+  "class": "recipes-grid-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Blog"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Recipe posts from this blog. Article metafields: custom.category, custom.prep_time, custom.servings, custom.difficulty. Section is hidden when the blog has no articles."
+    },
+    {
+      "type": "header",
+      "content": "Filter labels"
+    },
+    {
+      "type": "text",
+      "id": "filter_category_label",
+      "label": "Category filter label",
+      "default": "Categoria"
+    },
+    {
+      "type": "text",
+      "id": "filter_difficulty_label",
+      "label": "Difficulty filter label",
+      "default": "Difficoltà"
+    },
+    {
+      "type": "text",
+      "id": "all_label",
+      "label": "\"All\" button label",
+      "default": "Tutte"
+    },
+    {
+      "type": "text",
+      "id": "empty_message",
+      "label": "Empty state message",
+      "default": "Nessuna ricetta trovata con i filtri selezionati."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "Scroll margin (px) – grid",
+      "default": "-60"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recipes grid"
+    }
+  ]
+}
+{% endschema %}

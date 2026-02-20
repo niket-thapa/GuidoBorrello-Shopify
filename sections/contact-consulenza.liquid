@@ -1,0 +1,309 @@
+{% capture newline %}
+{% endcapture %}
+{% liquid
+  assign eyebrow = section.settings.eyebrow
+  assign heading = section.settings.heading
+  assign success_title = section.settings.success_title
+  assign success_message = section.settings.success_message
+  assign type_options_text = section.settings.consultation_type_options
+  assign type_options = type_options_text | split: newline
+  assign aos_margin = section.settings.aos_margin
+  if aos_margin == blank
+    assign aos_margin = '0'
+  endif
+  assign form_id = 'contact-consulenza-form-' | append: section.id
+%}
+
+<!-- Contact form (Consulenze style) – same structure, animations and styles as reference -->
+<section class="py-20 md:py-28 contact-consulenza-section" {{ section.shopify_attributes }}>
+  <div class="max-w-2xl mx-auto px-6">
+    <div class="text-center mb-12 aos-group" data-aos-margin="{{ aos_margin }}">
+      {% if eyebrow != blank %}
+        <p class="aos text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground mb-3" data-aos-delay="0">{{ eyebrow | escape }}</p>
+      {% endif %}
+      {% if heading != blank %}
+        <h2 class="aos font-serif text-3xl md:text-4xl" data-aos-delay="1">{{ heading | escape }}</h2>
+      {% endif %}
+    </div>
+
+    <div id="contact-consulenza-success-{{ section.id }}" class="text-center py-16 contact-consulenza-section__success {% unless form.posted_successfully? %}hidden{% endunless %}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="text-accent mx-auto mb-4" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+      {% if success_title != blank %}
+        <h3 class="font-serif text-2xl mb-2">{{ success_title | escape }}</h3>
+      {% endif %}
+      {% if success_message != blank %}
+        <p class="text-muted-foreground text-sm">{{ success_message | escape }}</p>
+      {% endif %}
+    </div>
+
+    {% form 'contact', id: form_id, class: 'contact-consulenza-section__form' %}
+      <div class="contact-consulenza-section__form-inner {% if form.posted_successfully? %}hidden{% endif %}">
+      {% if form.errors %}
+        <div class="contact-consulenza-section__error text-sm text-red-600 mb-4" role="alert">
+          {{ form.errors | default_errors }}
+        </div>
+      {% endif %}
+
+      <input type="hidden" name="contact[body]" id="contact-consulenza-body-{{ section.id }}" value="">
+
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="contact-consulenza-name-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">
+            {{ section.settings.label_name }}
+          </label>
+          <input
+            type="text"
+            id="contact-consulenza-name-{{ section.id }}"
+            name="contact[name]"
+            required
+            maxlength="100"
+            placeholder="{{ section.settings.placeholder_name }}"
+            class="contact-consulenza-section__input w-full px-4 py-3 bg-card border border-border text-sm transition-colors rounded-sm"
+            autocomplete="name"
+          >
+        </div>
+        <div>
+          <label for="contact-consulenza-email-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">
+            {{ section.settings.label_email }}
+          </label>
+          <input
+            type="email"
+            id="contact-consulenza-email-{{ section.id }}"
+            name="contact[email]"
+            required
+            maxlength="255"
+            placeholder="{{ section.settings.placeholder_email }}"
+            class="contact-consulenza-section__input w-full px-4 py-3 bg-card border border-border text-sm transition-colors rounded-sm"
+            autocomplete="email"
+          >
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="contact-consulenza-phone-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">
+            {{ section.settings.label_phone }}
+          </label>
+          <input
+            type="tel"
+            id="contact-consulenza-phone-{{ section.id }}"
+            name="contact[phone]"
+            maxlength="20"
+            placeholder="{{ section.settings.placeholder_phone }}"
+            class="contact-consulenza-section__input w-full px-4 py-3 bg-card border border-border text-sm transition-colors rounded-sm"
+            autocomplete="tel"
+          >
+        </div>
+        <div>
+          <label for="contact-consulenza-type-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">
+            {{ section.settings.label_type }}
+          </label>
+          <select
+            id="contact-consulenza-type-{{ section.id }}"
+            name="contact_consult_type"
+            required
+            class="contact-consulenza-section__input w-full px-4 py-3 bg-card border border-border text-sm transition-colors rounded-sm appearance-none"
+          >
+            <option value="">{{ section.settings.placeholder_type }}</option>
+            {% for option in type_options %}
+              {% assign line = option | strip %}
+              {% if line != blank %}
+                <option value="{{ line | escape }}">{{ line | escape }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label for="contact-consulenza-message-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">
+          {{ section.settings.label_message }}
+        </label>
+        <textarea
+          id="contact-consulenza-message-{{ section.id }}"
+          name="contact_message"
+          required
+          maxlength="1000"
+          rows="5"
+          placeholder="{{ section.settings.placeholder_message }}"
+          class="contact-consulenza-section__input w-full px-4 py-3 bg-card border border-border text-sm transition-colors rounded-sm resize-none"
+        ></textarea>
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          class="group flex items-center justify-center gap-3 w-full py-4 bg-primary text-primary-foreground text-[11px] font-sans font-medium uppercase tracking-[0.2em] hover:opacity-90 transition-opacity contact-consulenza-section__submit"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+          <span>{{ section.settings.button_label }}</span>
+        </button>
+      </div>
+      </div>
+    {% endform %}
+  </div>
+</section>
+{% style %}
+  .contact-consulenza-section .grid {
+    grid-template-areas: none;
+  }
+{% endstyle %}
+
+<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+
+<script>
+  (function() {
+    var sectionId = '{{ section.id }}';
+    var form = document.getElementById('contact-consulenza-form-' + sectionId);
+    var bodyHidden = document.getElementById('contact-consulenza-body-' + sectionId);
+    var typeSelect = document.getElementById('contact-consulenza-type-' + sectionId);
+    var messageField = document.getElementById('contact-consulenza-message-' + sectionId);
+
+    if (!form || !bodyHidden) return;
+
+    form.addEventListener('submit', function() {
+      if (typeSelect && messageField) {
+        var typeVal = typeSelect.options[typeSelect.selectedIndex] ? typeSelect.options[typeSelect.selectedIndex].text : '';
+        bodyHidden.value = 'Tipo di consulenza: ' + typeVal + '\n\n' + (messageField.value || '');
+      }
+    });
+  })();
+</script>
+
+{% style %}
+  .contact-consulenza-section__input:focus {
+    outline: none;
+    border-color: hsl(var(--accent));
+  }
+  .contact-consulenza-section__input::placeholder {
+    color: hsl(var(--muted-foreground) / 0.7);
+  }
+  .contact-consulenza-section select.contact-consulenza-section__input {
+    cursor: pointer;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Contact form (Consulenze)",
+  "tag": "section",
+  "class": "contact-consulenza-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "info": "Small uppercase label above the heading."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading (H2)",
+      "info": "Main section heading."
+    },
+    {
+      "type": "header",
+      "content": "Success message"
+    },
+    {
+      "type": "text",
+      "id": "success_title",
+      "label": "Success title",
+      "info": "Heading shown after form is sent (e.g. Richiesta inviata)."
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "info": "Paragraph shown after form is sent."
+    },
+    {
+      "type": "header",
+      "content": "Form labels"
+    },
+    {
+      "type": "text",
+      "id": "label_name",
+      "label": "Label: Name"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_name",
+      "label": "Placeholder: Name"
+    },
+    {
+      "type": "text",
+      "id": "label_email",
+      "label": "Label: Email"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_email",
+      "label": "Placeholder: Email"
+    },
+    {
+      "type": "text",
+      "id": "label_phone",
+      "label": "Label: Phone"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_phone",
+      "label": "Placeholder: Phone"
+    },
+    {
+      "type": "text",
+      "id": "label_type",
+      "label": "Label: Consultation type"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_type",
+      "label": "Placeholder: Type (e.g. Seleziona...)"
+    },
+    {
+      "type": "textarea",
+      "id": "consultation_type_options",
+      "label": "Consultation type options",
+      "info": "One option per line (e.g. Menu Development, Formazione Staff, Consulenza Privata, Altro)."
+    },
+    {
+      "type": "text",
+      "id": "label_message",
+      "label": "Label: Message"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_message",
+      "label": "Placeholder: Message"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Submit button label"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "Scroll margin (px)",
+      "info": "Trigger margin for header (e.g. 0). Leave blank for 0."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact form (Consulenze)"
+    }
+  ]
+}
+{% endschema %}

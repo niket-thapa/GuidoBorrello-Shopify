@@ -3,13 +3,61 @@
   assign heading = section.settings.heading
   assign paragraph_1 = section.settings.paragraph_1
   assign image = section.settings.image
-  assign aos_margin = section.settings.aos_margin | default: '-80'
+  assign image_position = section.settings.image_position
+  assign image_animation = section.settings.image_animation
+  assign cta_label = section.settings.cta_label
+  assign cta_link = section.settings.cta_link
+  assign aos_margin = section.settings.aos_margin
+  assign padding_style = section.settings.padding_style
+
+  if aos_margin == blank
+    assign aos_margin = '-80'
+  endif
+  if image_position == 'left'
+    assign image_first = true
+  else
+    assign image_first = false
+  endif
+  if image_animation == 'left'
+    assign image_slide_class = 'aos-slide-left'
+    assign image_aos_margin = '0'
+  else
+    assign image_slide_class = 'aos-slide-right'
+    assign image_aos_margin = aos_margin
+  endif
+  if padding_style == 'compact'
+    assign section_padding = 'py-20 md:py-28'
+  else
+    assign section_padding = 'py-24 md:py-32'
+  endif
 %}
 
-<!-- Story – same structure and animations as reference -->
-<section class="py-24 md:py-32 overflow-hidden story-section" {{ section.shopify_attributes }}>
+<!-- Story / Values – same structure and animations as reference, flexible layout -->
+<section class="{{ section_padding }} overflow-hidden story-section" {{ section.shopify_attributes }}>
   <div class="max-w-7xl mx-auto px-6">
     <div class="grid md:grid-cols-2 gap-16 items-center">
+      {% if image_first %}
+        {% comment %} Image column (left) {% endcomment %}
+        <div class="aos {{ image_slide_class }} aspect-[4/5] overflow-hidden rounded-sm" data-aos-margin="{{ image_aos_margin }}">
+          {% if image != blank %}
+            {{
+              image
+              | image_url: width: 1200
+              | image_tag:
+                width: image.width,
+                widths: '400, 500, 600, 800, 1000, 1200',
+                sizes: '(min-width: 768px) 50vw, 100vw',
+                alt: image.alt | default: heading | default: 'Story image',
+                class: 'w-full h-full object-cover story-section__image',
+                loading: 'lazy'
+            }}
+          {% else %}
+            <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% comment %} Content column {% endcomment %}
       <div class="aos-group" data-aos-margin="{{ aos_margin }}">
         {% if eyebrow != blank %}
           <p class="aos text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground mb-4" data-aos-delay="0">{{ eyebrow | escape }}</p>
@@ -18,26 +66,40 @@
           <h2 class="aos font-serif text-3xl md:text-4xl leading-tight mb-6" data-aos-delay="1">{{ heading | escape }}</h2>
         {% endif %}
         {% if paragraph_1 != blank %}
-          <div class="aos text-muted-foreground leading-relaxed story-section__richtext" data-aos-delay="2">{{ paragraph_1 }}</div>
+          <div class="aos text-muted-foreground leading-relaxed mb-4 story-section__richtext" data-aos-delay="2">{{ paragraph_1 }}</div>
+        {% endif %}
+        {% if cta_label != blank %}
+          <div class="aos" data-aos-delay="3">
+            <a
+              href="{{ cta_link | default: '#' }}"
+              class="inline-block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-foreground border-b border-foreground/40 pb-1 hover:border-foreground transition-colors"
+            >
+              {{ cta_label | escape }}
+            </a>
+          </div>
         {% endif %}
       </div>
-      <div class="aos aos-slide-right aspect-[4/5] overflow-hidden rounded-sm" data-aos-margin="{{ aos_margin }}">
-        {% if image != blank %}
-          {{
-            image
-            | image_url: width: 1200
-            | image_tag:
-              width: image.width,
-              widths: '400, 500, 600, 800, 1000, 1200',
-              sizes: '(min-width: 768px) 50vw, 100vw',
-              alt: image.alt | default: heading | default: 'Story image',
-              class: 'story-section__image',
-              loading: 'lazy'
-          }}
-        {% else %}
-          <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
-        {% endif %}
-      </div>
+
+      {% unless image_first %}
+        {% comment %} Image column (right) {% endcomment %}
+        <div class="aos {{ image_slide_class }} aspect-[4/5] overflow-hidden rounded-sm" data-aos-margin="{{ image_aos_margin }}">
+          {% if image != blank %}
+            {{
+              image
+              | image_url: width: 1200
+              | image_tag:
+                width: image.width,
+                widths: '400, 500, 600, 800, 1000, 1200',
+                sizes: '(min-width: 768px) 50vw, 100vw',
+                alt: image.alt | default: heading | default: 'Story image',
+                class: 'w-full h-full object-cover story-section__image',
+                loading: 'lazy'
+            }}
+          {% else %}
+            <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
+          {% endif %}
+        </div>
+      {% endunless %}
     </div>
   </div>
 </section>
@@ -73,6 +135,43 @@
   "settings": [
     {
       "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        { "value": "right", "label": "Image on right" },
+        { "value": "left", "label": "Image on left (e.g. Values section)" }
+      ],
+      "default": "right",
+      "info": "Left = content right, image first (like Chi siamo Values)."
+    },
+    {
+      "type": "select",
+      "id": "image_animation",
+      "label": "Image animation",
+      "options": [
+        { "value": "right", "label": "Slide from right" },
+        { "value": "left", "label": "Slide from left" }
+      ],
+      "default": "right",
+      "info": "Slide from left matches Values section (image on left)."
+    },
+    {
+      "type": "select",
+      "id": "padding_style",
+      "label": "Section padding",
+      "options": [
+        { "value": "default", "label": "Default (py-24 md:py-32)" },
+        { "value": "compact", "label": "Compact (py-20 md:py-28)" }
+      ],
+      "default": "default",
+      "info": "Compact matches Values section."
+    },
+    {
+      "type": "header",
       "content": "Content"
     },
     {
@@ -84,13 +183,30 @@
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
-      "info": "Main heading (H2)."
+      "label": "Heading (H2)",
+      "info": "Main heading."
     },
     {
       "type": "richtext",
       "id": "paragraph_1",
-      "label": "Paragraph"
+      "label": "Paragraph",
+      "info": "Body text below the heading."
+    },
+    {
+      "type": "header",
+      "content": "CTA link"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "info": "e.g. Scopri i prodotti. Leave blank to hide."
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA URL",
+      "info": "Link for the CTA (e.g. #prodotti or collection)."
     },
     {
       "type": "header",
@@ -100,7 +216,7 @@
       "type": "image_picker",
       "id": "image",
       "label": "Image",
-      "info": "Right column image (aspect 4:5)."
+      "info": "Aspect 4:5. Shown left or right depending on layout."
     },
     {
       "type": "header",
@@ -110,14 +226,24 @@
       "type": "text",
       "id": "aos_margin",
       "label": "Scroll margin (px)",
-      "default": "-80",
-      "info": "Trigger margin for animate-on-scroll (e.g. -80). Same as reference data-aos-margin."
+      "info": "Trigger margin for content (e.g. -80 or 0). Leave blank for -80. Image uses 0 when animation is Slide from left."
     }
   ],
   "presets": [
     {
       "name": "Story",
-      "settings": {}
+      "settings": {
+        "image_position": "right",
+        "image_animation": "right"
+      }
+    },
+    {
+      "name": "Values (image left + CTA)",
+      "settings": {
+        "image_position": "left",
+        "image_animation": "left",
+        "padding_style": "compact"
+      }
     }
   ]
 }

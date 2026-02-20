@@ -1447,19 +1447,23 @@ button.shopify-payment-button__button--unbranded {
   text-transform: var(--button-text-case-primary);
 }
 
-textarea,
-input:not([type="checkbox"], [type="radio"]) {
+textarea:not(.bg-card):not(.bg-background),
+input:not([type="checkbox"], [type="radio"]):not(.bg-card):not(.bg-background) {
   background-color: var(--color-input-background);
   border-color: var(--color-input-border);
 }
 
-textarea::placeholder,
-input::placeholder {
+textarea:not(.bg-card):not(.bg-background)::placeholder,
+input:not([type="checkbox"], [type="radio"]):not(.bg-card):not(
+    .bg-background
+  )::placeholder {
   color: var(--color-input-text);
 }
 
-textarea:not(:placeholder-shown)::placeholder,
-input:not(:placeholder-shown)::placeholder {
+textarea:not(.bg-card):not(.bg-background):not(:placeholder-shown)::placeholder,
+input:not([type="checkbox"], [type="radio"]):not(.bg-card):not(
+    .bg-background
+  ):not(:placeholder-shown)::placeholder {
   opacity: 0;
 }
 

@@ -1,0 +1,108 @@
+{% liquid
+  assign logo = section.settings.logo
+  assign quote = section.settings.quote
+  assign paragraph = section.settings.paragraph
+  assign aos_margin = section.settings.aos_margin
+  if aos_margin == blank
+    assign aos_margin = '0'
+  endif
+%}
+
+<!-- Intro – same structure and animations as reference (aos-group, data-aos-delay) -->
+<section class="py-20 md:py-28 intro-section" {{ section.shopify_attributes }}>
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    <div class="aos-group" data-aos-margin="{{ aos_margin }}">
+      {% if logo != blank %}
+        <div class="aos flex justify-center mb-8" data-aos-delay="0">
+          {% assign logo_alt = logo.alt | default: 'Logo' %}
+          {{
+            logo
+            | image_url: width: 256
+            | image_tag:
+              width: logo.width,
+              widths: '64, 128, 256',
+              sizes: '64px',
+              alt: logo_alt,
+              class: 'h-16 w-auto opacity-60 intro-section__logo',
+              loading: 'lazy'
+          }}
+        </div>
+      {% endif %}
+      {% if quote != blank %}
+        <h2 class="aos font-serif text-2xl md:text-3xl mb-6 italic" data-aos-delay="1">
+          {{ quote | escape }}
+        </h2>
+      {% endif %}
+      {% if paragraph != blank %}
+        <div class="aos text-muted-foreground leading-relaxed intro-section__richtext" data-aos-delay="2">
+          {{ paragraph }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+
+{% style %}
+  .intro-section__logo {
+    display: block;
+    object-fit: contain;
+  }
+  .intro-section__richtext p {
+    margin: 0 0 0.5em;
+  }
+  .intro-section__richtext p:last-child {
+    margin-bottom: 0;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Intro",
+  "tag": "section",
+  "class": "intro-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo",
+      "info": "Optional logo above the quote (e.g. GB logo)."
+    },
+    {
+      "type": "text",
+      "id": "quote",
+      "label": "Quote / heading",
+      "info": "H2 quote or heading (italic)."
+    },
+    {
+      "type": "richtext",
+      "id": "paragraph",
+      "label": "Paragraph",
+      "info": "Body text below the quote."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "Scroll margin (px)",
+      "info": "Trigger margin for animate-on-scroll (e.g. 0 or -80). Leave blank for 0."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Intro"
+    }
+  ]
+}
+{% endschema %}

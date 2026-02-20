@@ -1,0 +1,100 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero_sub_page_RD8pkf": {
+      "type": "hero-sub-page",
+      "name": "Sub page hero",
+      "settings": {
+        "image": "shopify://shop_images/consulenza-hero.png",
+        "eyebrow": "Consulenze",
+        "title": "La mia esperienza, al tuo servizio"
+      }
+    },
+    "intro_dht6bY": {
+      "type": "intro",
+      "name": "Intro",
+      "settings": {
+        "quote": "\"Ogni cucina ha una storia. Io ti aiuto a scrivere la tua.\"",
+        "paragraph": "<p>Dopo anni nelle cucine professionali e nello sviluppo di prodotti gastronomici, offro la mia esperienza a ristoratori, attività del food e appassionati che vogliono portare la propria cucina a un livello superiore.</p>",
+        "aos_margin": "-80"
+      }
+    },
+    "services_Q7Gqhp": {
+      "type": "services",
+      "blocks": {
+        "service_GmirAb": {
+          "type": "service",
+          "settings": {
+            "icon": "shopify://shop_images/icon-1_065d639c-3e17-4930-81b6-7a4a0bdfc42f.svg",
+            "title": "Menu Development",
+            "description": "<p>Progettazione di menù per ristoranti, basati su stagionalità, identità territoriale e sostenibilità economica.</p>"
+          }
+        },
+        "service_KPqJaC": {
+          "type": "service",
+          "settings": {
+            "icon": "shopify://shop_images/icon-2_b9317ce6-c98b-4e47-9ce9-a2581dbbd9f7.svg",
+            "title": "Formazione Staff",
+            "description": "<p>Training pratico per il personale di cucina: tecniche di cottura, gestione mise en place, standardizzazione delle ricette.</p>"
+          }
+        },
+        "service_8YhfxG": {
+          "type": "service",
+          "settings": {
+            "icon": "shopify://shop_images/icon-3_e3d0f3c1-5b0f-4711-bb17-ae71999a1ce2.svg",
+            "title": "Consulenza Privata",
+            "description": "<p>Sessioni personalizzate per appassionati che vogliono approfondire la cucina tradizionale italiana a casa propria.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "service_GmirAb",
+        "service_KPqJaC",
+        "service_8YhfxG"
+      ],
+      "name": "Services",
+      "settings": {
+        "eyebrow": "Servizi",
+        "heading": "Come posso aiutarti",
+        "aos_margin": ""
+      }
+    },
+    "contact_consulenza_ymty79": {
+      "type": "contact-consulenza",
+      "name": "Contact form (Consulenze)",
+      "settings": {
+        "eyebrow": "Richiedi informazioni",
+        "heading": "Parliamone insieme",
+        "success_title": "",
+        "success_message": "",
+        "label_name": "Nome completo *",
+        "placeholder_name": "Il tuo nome",
+        "label_email": "Email *",
+        "placeholder_email": "email@esempio.com",
+        "label_phone": "Telefono",
+        "placeholder_phone": "+39 ...",
+        "label_type": "Tipo di consulenza *",
+        "placeholder_type": "Seleziona...",
+        "consultation_type_options": "Menu Development\nFormazione Staff\nConsulenza Privata\nAltro",
+        "label_message": "Messaggio *",
+        "placeholder_message": "Descrivi brevemente le tue esigenze...",
+        "button_label": "Invia richiesta",
+        "aos_margin": ""
+      }
+    }
+  },
+  "order": [
+    "hero_sub_page_RD8pkf",
+    "intro_dht6bY",
+    "services_Q7Gqhp",
+    "contact_consulenza_ymty79"
+  ]
+}

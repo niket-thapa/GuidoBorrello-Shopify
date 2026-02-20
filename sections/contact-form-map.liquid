@@ -1,0 +1,384 @@
+{% capture newline %}
+{% endcapture %}
+{% liquid
+  assign form_eyebrow = section.settings.form_eyebrow
+  assign form_heading = section.settings.form_heading
+  assign success_title = section.settings.success_title
+  assign success_message = section.settings.success_message
+  assign subject_options_text = section.settings.subject_options
+  assign subject_options = subject_options_text | split: newline
+  assign company_eyebrow = section.settings.company_eyebrow
+  assign company_heading = section.settings.company_heading
+  assign map_embed_url = section.settings.map_embed_url
+  assign aos_margin = section.settings.aos_margin
+  if aos_margin == blank
+    assign aos_margin = '-60'
+  endif
+  assign form_id = 'contact-contatti-form-' | append: section.id
+%}
+
+<!-- Form + Company Info / Map – same structure and animations as reference (contatti.html) -->
+<section class="py-20 bg-card contact-form-map-section" {{ section.shopify_attributes }}>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-16 md:gap-24">
+      <!-- Form column -->
+      <div class="aos-group" data-aos-margin="{{ aos_margin }}">
+        {% if form_eyebrow != blank %}
+          <p class="aos text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground mb-3" data-aos-delay="0">{{ form_eyebrow | escape }}</p>
+        {% endif %}
+        {% if form_heading != blank %}
+          <h2 class="aos font-serif text-3xl md:text-4xl mb-8" data-aos-delay="1">{{ form_heading | escape }}</h2>
+        {% endif %}
+
+        <div id="contact-contatti-success-{{ section.id }}" class="text-center py-16 contact-form-map-section__success {% unless form.posted_successfully? %}hidden{% endunless %}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="text-accent mx-auto mb-4" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+          {% if success_title != blank %}
+            <h3 class="font-serif text-2xl mb-2">{{ success_title | escape }}</h3>
+          {% endif %}
+          {% if success_message != blank %}
+            <p class="text-muted-foreground text-sm">{{ success_message | escape }}</p>
+          {% endif %}
+        </div>
+
+        {% form 'contact', id: form_id, class: 'contact-form-map-section__form' %}
+          <div class="contact-form-map-section__form-inner space-y-5 {% if form.posted_successfully? %}hidden{% endif %}">
+            {% if form.errors %}
+              <div class="contact-form-map-section__error text-sm text-red-600 mb-4" role="alert">
+                {{ form.errors | default_errors }}
+              </div>
+            {% endif %}
+
+            <input type="hidden" name="contact[body]" id="contact-contatti-body-{{ section.id }}" value="">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label for="contact-contatti-name-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">{{ section.settings.label_name }}</label>
+                <input type="text" id="contact-contatti-name-{{ section.id }}" name="contact[name]" required maxlength="100" placeholder="{{ section.settings.placeholder_name }}"
+                  class="contact-form-map-section__input w-full px-4 py-3 bg-background border border-border text-sm transition-colors rounded-sm" autocomplete="name">
+              </div>
+              <div>
+                <label for="contact-contatti-email-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">{{ section.settings.label_email }}</label>
+                <input type="email" id="contact-contatti-email-{{ section.id }}" name="contact[email]" required maxlength="255" placeholder="{{ section.settings.placeholder_email }}"
+                  class="contact-form-map-section__input w-full px-4 py-3 bg-background border border-border text-sm transition-colors rounded-sm" autocomplete="email">
+              </div>
+            </div>
+
+            <div>
+              <label for="contact-contatti-subject-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">{{ section.settings.label_subject }}</label>
+              <select id="contact-contatti-subject-{{ section.id }}" name="contact_subject" required
+                class="contact-form-map-section__input w-full px-4 py-3 bg-background border border-border text-sm transition-colors rounded-sm appearance-none">
+                <option value="">{{ section.settings.placeholder_subject }}</option>
+                {% for option in subject_options %}
+                  {% assign line = option | strip %}
+                  {% if line != blank %}
+                    <option value="{{ line | escape }}">{{ line | escape }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label for="contact-contatti-message-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">{{ section.settings.label_message }}</label>
+              <textarea id="contact-contatti-message-{{ section.id }}" name="contact_message" required maxlength="1000" rows="5" placeholder="{{ section.settings.placeholder_message }}"
+                class="contact-form-map-section__input w-full px-4 py-3 bg-background border border-border text-sm transition-colors rounded-sm resize-none"></textarea>
+            </div>
+
+            <div>
+              <button type="submit" class="group flex items-center justify-center gap-3 w-full py-4 bg-primary text-primary-foreground text-[11px] font-sans font-medium uppercase tracking-[0.2em] hover:opacity-90 transition-opacity rounded-sm contact-form-map-section__submit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+                <span>{{ section.settings.button_label }}</span>
+              </button>
+            </div>
+          </div>
+        {% endform %}
+      </div>
+
+      <!-- Company Info + Map column -->
+      <div class="aos-group" data-aos-margin="{{ aos_margin }}">
+        {% if company_eyebrow != blank %}
+          <p class="aos text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground mb-3" data-aos-delay="0">{{ company_eyebrow | escape }}</p>
+        {% endif %}
+        {% if company_heading != blank %}
+          <h2 class="aos font-serif text-3xl md:text-4xl mb-8" data-aos-delay="1">{{ company_heading | escape }}</h2>
+        {% endif %}
+
+        <div class="aos space-y-6 mb-10 contact-form-map-section__info" data-aos-delay="2">
+          {% for block in section.blocks %}
+            {% if block.type == 'info' %}
+              {% liquid
+                assign info_icon = block.settings.icon
+                assign info_title = block.settings.title
+                assign info_content = block.settings.content
+                assign info_icon_alt = info_icon.alt | default: info_title | default: 'Icon'
+              %}
+              <div class="flex gap-4" {{ block.shopify_attributes }}>
+                {% if info_icon != blank %}
+                  <div class="contact-form-map-section__info-icon shrink-0 mt-0.5">
+                    {{
+                      info_icon
+                      | image_url: width: 72
+                      | image_tag:
+                        width: info_icon.width,
+                        widths: '36, 72',
+                        sizes: '18px',
+                        alt: info_icon_alt,
+                        class: 'contact-form-map-section__info-icon-img',
+                        loading: 'lazy'
+                    }}
+                  </div>
+                {% endif %}
+                <div>
+                  {% if info_title != blank %}
+                    <p class="font-serif text-sm mb-0.5">{{ info_title | escape }}</p>
+                  {% endif %}
+                  {% if info_content != blank %}
+                    <div class="text-sm text-muted-foreground contact-form-map-section__info-content">{{ info_content }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if map_embed_url != blank %}
+          <div class="aos aspect-[4/3] rounded-sm overflow-hidden border border-border contact-form-map-section__map" data-aos-delay="3">
+            <iframe
+              title="{{ section.settings.map_title | default: 'Mappa' | escape }}"
+              src="{{ map_embed_url }}"
+              width="100%"
+              height="100%"
+              style="border:0"
+              allowfullscreen
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+
+<script>
+  (function() {
+    var sectionId = '{{ section.id }}';
+    var form = document.getElementById('contact-contatti-form-' + sectionId);
+    var bodyHidden = document.getElementById('contact-contatti-body-' + sectionId);
+    var subjectSelect = document.getElementById('contact-contatti-subject-' + sectionId);
+    var messageField = document.getElementById('contact-contatti-message-' + sectionId);
+
+    if (!form || !bodyHidden) return;
+
+    form.addEventListener('submit', function() {
+      if (subjectSelect && messageField) {
+        var subjectVal = subjectSelect.options[subjectSelect.selectedIndex] ? subjectSelect.options[subjectSelect.selectedIndex].text : '';
+        bodyHidden.value = 'Oggetto: ' + subjectVal + '\n\n' + (messageField.value || '');
+      }
+    });
+  })();
+</script>
+
+{% style %}
+  .contact-form-map-section .grid {
+    grid-template-areas: none;
+  }
+  .contact-form-map-section__input:focus {
+    outline: none;
+    border-color: hsl(var(--accent));
+  }
+  .contact-form-map-section__input::placeholder {
+    color: hsl(var(--muted-foreground) / 0.7);
+  }
+  .contact-form-map-section select.contact-form-map-section__input {
+    cursor: pointer;
+  }
+  .contact-form-map-section__info-icon {
+    flex-shrink: 0;
+  }
+  .contact-form-map-section__info-icon-img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    display: block;
+  }
+  .contact-form-map-section__info-content p {
+    margin: 0 0 0.25em;
+  }
+  .contact-form-map-section__info-content p:last-child {
+    margin-bottom: 0;
+  }
+  .contact-form-map-section__map iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Contact form + Map",
+  "tag": "section",
+  "class": "contact-form-map-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Form column"
+    },
+    {
+      "type": "text",
+      "id": "form_eyebrow",
+      "label": "Form eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "form_heading",
+      "label": "Form heading (H2)"
+    },
+    {
+      "type": "header",
+      "content": "Success message"
+    },
+    {
+      "type": "text",
+      "id": "success_title",
+      "label": "Success title"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message"
+    },
+    {
+      "type": "header",
+      "content": "Form labels & placeholders"
+    },
+    {
+      "type": "text",
+      "id": "label_name",
+      "label": "Label: Name"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_name",
+      "label": "Placeholder: Name"
+    },
+    {
+      "type": "text",
+      "id": "label_email",
+      "label": "Label: Email"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_email",
+      "label": "Placeholder: Email"
+    },
+    {
+      "type": "text",
+      "id": "label_subject",
+      "label": "Label: Subject"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_subject",
+      "label": "Placeholder: Subject (e.g. Seleziona...)"
+    },
+    {
+      "type": "textarea",
+      "id": "subject_options",
+      "label": "Subject options",
+      "info": "One option per line."
+    },
+    {
+      "type": "text",
+      "id": "label_message",
+      "label": "Label: Message"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_message",
+      "label": "Placeholder: Message"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Submit button label"
+    },
+    {
+      "type": "header",
+      "content": "Company column"
+    },
+    {
+      "type": "text",
+      "id": "company_eyebrow",
+      "label": "Company eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "company_heading",
+      "label": "Company heading (H2)"
+    },
+    {
+      "type": "header",
+      "content": "Map"
+    },
+    {
+      "type": "text",
+      "id": "map_embed_url",
+      "label": "Map embed URL",
+      "info": "Google Maps embed iframe src (e.g. https://www.google.com/maps/embed?pb=...)."
+    },
+    {
+      "type": "text",
+      "id": "map_title",
+      "label": "Map iframe title",
+      "info": "Accessibility title for the iframe."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "Scroll margin (px)",
+      "info": "Trigger margin for both columns (e.g. -60). Leave blank for -60."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "info",
+      "name": "Info row",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon / image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "e.g. Sede, Orari, P.IVA"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "info": "Body text (can be multiple lines)."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact form + Map",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

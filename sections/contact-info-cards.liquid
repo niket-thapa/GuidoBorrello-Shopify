@@ -1,0 +1,153 @@
+{% liquid
+  assign aos_margin = section.settings.aos_margin
+  if aos_margin == blank
+    assign aos_margin = '-60'
+  endif
+%}
+
+<!-- Contact info cards – same structure and animations as reference (contatti.html) -->
+<section class="pb-20 contact-info-cards-section" {{ section.shopify_attributes }}>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 aos-group" data-aos-margin="{{ aos_margin }}">
+      {% for block in section.blocks %}
+        {% if block.type == 'card' %}
+          {% liquid
+            assign icon = block.settings.icon
+            assign label = block.settings.label
+            assign value = block.settings.value
+            assign link_url = block.settings.link_url
+            assign icon_alt = icon.alt | default: label | default: 'Icon'
+            assign is_external = false
+            if link_url != blank and link_url contains 'http'
+              assign is_external = true
+            endif
+          %}
+          {% if link_url != blank %}
+            <a
+              href="{{ link_url }}"
+              {% if is_external %}target="_blank" rel="noopener noreferrer"{% endif %}
+              class="aos group p-6 md:p-8 bg-card rounded-sm border border-border text-center hover:shadow-lg hover:border-accent/30 transition-all duration-300 contact-info-cards-section__card"
+              data-aos-delay="{{ forloop.index0 }}"
+              {{ block.shopify_attributes }}
+            >
+          {% else %}
+            <div
+              class="aos group p-6 md:p-8 bg-card rounded-sm border border-border text-center contact-info-cards-section__card"
+              data-aos-delay="{{ forloop.index0 }}"
+              {{ block.shopify_attributes }}
+            >
+          {% endif %}
+            {% if icon != blank %}
+              <div class="w-12 h-12 rounded-full bg-accent/10 mx-auto mb-4 flex items-center justify-center group-hover:bg-accent/20 transition-colors contact-info-cards-section__icon-wrap">
+                {{
+                  icon
+                  | image_url: width: 80
+                  | image_tag:
+                    width: icon.width,
+                    widths: '40, 80',
+                    sizes: '48px',
+                    alt: icon_alt,
+                    class: 'contact-info-cards-section__icon text-accent',
+                    loading: 'lazy'
+                }}
+              </div>
+            {% endif %}
+            {% if label != blank %}
+              <p class="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">{{ label | escape }}</p>
+            {% endif %}
+            {% if value != blank %}
+              <p class="font-serif text-sm">{{ value | escape }}</p>
+            {% endif %}
+          {% if link_url != blank %}
+            </a>
+          {% else %}
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+
+{% style %}
+  .contact-info-cards-section .grid {
+    grid-template-areas: none;
+  }
+  .contact-info-cards-section__icon-wrap {
+    min-width: 3rem;
+    min-height: 3rem;
+  }
+  .contact-info-cards-section__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    object-fit: contain;
+  }
+  .contact-info-cards-section__card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Contact info cards",
+  "tag": "section",
+  "class": "contact-info-cards-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "Scroll margin (px)",
+      "info": "Trigger margin for animate-on-scroll (e.g. -60). Leave blank for -60."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Contact card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon / image",
+          "info": "Upload icon or image (e.g. location, phone, email, social)."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "info": "Small uppercase label (e.g. Indirizzo, Telefono, Email)."
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value",
+          "info": "Display text (e.g. Napoli Italia, +39 333..., info@...)."
+        },
+        {
+          "type": "text",
+          "id": "link_url",
+          "label": "Link URL",
+          "info": "e.g. https://..., tel:+393331234567, or mailto:info@example.com. Leave blank for no link."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact info cards",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

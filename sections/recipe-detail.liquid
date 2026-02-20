@@ -1,0 +1,326 @@
+{% liquid
+  assign ingredients_heading = section.settings.ingredients_heading | default: 'Ingredienti'
+  assign preparation_heading = section.settings.preparation_heading | default: 'Preparazione'
+  assign back_link_text = section.settings.back_link_text | default: 'Tutte le ricette'
+  assign video_heading = section.settings.video_heading | default: 'Video ricetta'
+  assign video_placeholder_title = section.settings.video_placeholder_title | default: 'Video in arrivo'
+  assign video_placeholder_subtitle = section.settings.video_placeholder_subtitle | default: 'Presto disponibile su questa pagina'
+  assign product_heading = section.settings.product_heading | default: 'Preparato con'
+  assign product_button_text = section.settings.product_button_text | default: 'Scopri il prodotto'
+  assign aos_margin = section.settings.aos_margin | default: '-60'
+
+  assign category = article.metafields.custom.category | strip
+  assign prep_time = article.metafields.custom.prep_time | strip
+  assign servings = article.metafields.custom.servings | strip
+  assign difficulty = article.metafields.custom.difficulty | strip
+  assign ingredients_metafield = article.metafields.custom.ingredients
+  assign preparation_metafield = article.metafields.custom.preparation
+  assign video_url = article.metafields.custom.video_recipe_url.value | default: article.metafields.custom.video_recipe_url | strip
+  assign video_file = article.metafields.custom.video_recipe_file
+  assign linked_product = article.metafields.custom.product.value
+
+  assign blog_url = article.blog.url
+  assign has_video = false
+  assign video_src = ''
+  if video_url != blank
+    assign has_video = true
+    assign video_src = 'url'
+  elsif video_file != blank and video_file.value != blank
+    assign has_video = true
+    assign video_src = 'file'
+  endif
+%}
+
+{% comment %} Single recipe (article) detail – same structure and animations as reference pasta-alla-genovese.html {% endcomment %}
+
+{% comment %} Hero {% endcomment %}
+<section class="relative h-[50vh] md:h-[60vh] overflow-hidden recipe-detail-section recipe-detail-hero" {{ section.shopify_attributes }}>
+  <div class="absolute inset-0 recipe-detail-hero-scale">
+    {% if article.image %}
+      {% assign hero_alt = article.image.alt | default: article.title %}
+      {{
+        article.image
+        | image_url: width: 1400
+        | image_tag: alt: hero_alt, class: 'w-full h-full object-cover', loading: 'eager', fetchpriority: 'high'
+      }}
+    {% else %}
+      <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
+    {% endif %}
+    <div class="absolute inset-0 recipe-detail-hero-overlay"></div>
+  </div>
+  <div class="absolute bottom-0 left-0 right-0 z-10 max-w-4xl mx-auto px-6 pb-12">
+    <div class="recipe-detail-hero-item rd-delay-0">
+      <a href="{{ blog_url }}" class="inline-flex items-center gap-2 text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-primary-foreground/70 hover:text-primary-foreground transition-colors mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        {{ back_link_text | escape }}
+      </a>
+      {% if category != blank %}
+        <p class="text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-primary-foreground/50 mb-2">{{ category | escape }}</p>
+      {% endif %}
+      <h1 class="font-serif text-3xl md:text-5xl text-primary-foreground">{{ article.title | escape }}</h1>
+    </div>
+  </div>
+</section>
+
+{% comment %} Meta bar (prep time, servings, difficulty) {% endcomment %}
+<div class="border-b border-border">
+  <div class="max-w-4xl mx-auto px-6 py-5 flex flex-wrap items-center gap-6 md:gap-8">
+    {% if prep_time != blank %}
+      <span class="flex items-center gap-2 text-sm text-muted-foreground">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        {{ prep_time | escape }}
+      </span>
+    {% endif %}
+    {% if servings != blank %}
+      <span class="flex items-center gap-2 text-sm text-muted-foreground">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        {{ servings | escape }}
+      </span>
+    {% endif %}
+    {% if difficulty != blank %}
+      <span class="flex items-center gap-2 text-sm text-muted-foreground">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/></svg>
+        {{ difficulty | escape }}
+      </span>
+    {% endif %}
+  </div>
+</div>
+
+{% comment %} Ingredients + Preparation – ul/ol from backend; all list styling in guido-theme.css {% endcomment %}
+<section class="py-16 md:py-24">
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="grid grid-no-areas md:grid-cols-[1fr_2fr] gap-12 md:gap-16">
+      <div class="aos-group" data-aos-margin="{{ aos_margin }}">
+        <h2 class="aos font-serif text-2xl mb-6" data-aos-delay="0">{{ ingredients_heading | escape }}</h2>
+        <div class="recipe-detail-ingredients">
+          {{ ingredients_metafield | metafield_tag }}
+        </div>
+      </div>
+      <div class="aos-group" data-aos-margin="{{ aos_margin }}">
+        <h2 class="aos font-serif text-2xl mb-6" data-aos-delay="0">{{ preparation_heading | escape }}</h2>
+        <div class="recipe-detail-preparation">
+          {{ preparation_metafield | metafield_tag }}
+        </div>
+      </div>
+    </div>
+
+    {% comment %} Video {% endcomment %}
+    <div class="mt-16 aos-group" data-aos-margin="{{ aos_margin }}">
+      <p class="aos text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground mb-4" data-aos-delay="0">{{ video_heading | escape }}</p>
+      {% if has_video %}
+        <div class="aos aspect-video rounded-sm overflow-hidden bg-card border border-border recipe-detail-video" data-aos-delay="1">
+          {% if video_src == 'url' and video_url != blank %}
+            <div class="w-full h-full min-h-0">
+              <iframe src="{{ video_url }}" class="w-full h-full min-h-0 object-cover" allowfullscreen title="{{ video_heading | escape }}"></iframe>
+            </div>
+          {% elsif video_src == 'file' and video_file.value != blank %}
+            <video class="w-full h-full object-cover" controls playsinline>
+              <source src="{{ video_file.value.url }}" type="{{ video_file.value.media_type | default: 'video/mp4' }}">
+              Your browser does not support the video tag.
+            </video>
+          {% else %}
+            <div class="w-full h-full flex flex-col items-center justify-center">
+              <div class="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground ml-1" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+              <p class="font-serif text-lg text-muted-foreground">{{ video_placeholder_title | escape }}</p>
+              <p class="text-xs text-muted-foreground/60 mt-1">{{ video_placeholder_subtitle | escape }}</p>
+            </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="aos aspect-video rounded-sm overflow-hidden bg-card border border-border flex flex-col items-center justify-center" data-aos-delay="1">
+          <div class="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground ml-1" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <p class="font-serif text-lg text-muted-foreground">{{ video_placeholder_title | escape }}</p>
+          <p class="text-xs text-muted-foreground/60 mt-1">{{ video_placeholder_subtitle | escape }}</p>
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} Product CTA {% endcomment %}
+    {% if linked_product != blank or section.settings.show_product_placeholder %}
+      <div class="mt-20 p-8 bg-card rounded-sm flex flex-col md:flex-row items-center gap-8 aos-group" data-aos-margin="{{ aos_margin }}">
+        {% if linked_product != blank %}
+          <img
+            src="{{ linked_product.featured_image | image_url: width: 224 }}"
+            alt="{{ linked_product.featured_image.alt | default: linked_product.title | escape }}"
+            class="aos w-28 h-28 object-cover rounded-sm flex-shrink-0"
+            width="112"
+            height="112"
+            loading="lazy"
+            data-aos-delay="0"
+          />
+          <div class="flex-1 text-center md:text-left aos" data-aos-delay="1">
+            <p class="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-1">{{ product_heading | escape }}</p>
+            <h3 class="font-serif text-xl mb-1">{{ linked_product.title | escape }}</h3>
+            {% if linked_product.description != blank %}
+              <p class="text-sm text-muted-foreground">{{ linked_product.description | strip_html | truncate: 80 }}</p>
+            {% endif %}
+          </div>
+          <a href="{{ linked_product.url }}" class="aos inline-flex items-center gap-2 text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-foreground border border-border px-5 py-3 rounded-sm hover:bg-secondary transition-colors" data-aos-delay="2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            {{ product_button_text | escape }}
+          </a>
+        {% else %}
+          <div class="flex-1 text-center md:text-left">
+            <p class="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-1">{{ product_heading | escape }}</p>
+            <p class="text-sm text-muted-foreground">{{ section.settings.product_placeholder_text | default: 'Collega un prodotto dal metafield custom.product dell’articolo.' }}</p>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
+
+<script>
+(function () {
+  var section = document.querySelector('.recipe-detail-section');
+  if (!section) return;
+
+  var prepOl = section.querySelector('.recipe-detail-preparation ol');
+  if (prepOl) {
+    var steps = prepOl.querySelectorAll(':scope > li');
+    var stepWrapClass = 'text-sm text-foreground/80 leading-relaxed pt-2';
+    steps.forEach(function (li, i) {
+      var numEl = li.querySelector('.recipe-step-num');
+      if (!numEl) {
+        var num = document.createElement('span');
+        num.className = 'recipe-step-num';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = i + 1;
+        li.insertBefore(num, li.firstChild);
+      }
+      var wrap = li.querySelector('.recipe-step-content-wrap');
+      if (wrap) return;
+      var toWrap = [];
+      for (var j = 0; j < li.childNodes.length; j++) {
+        var node = li.childNodes[j];
+        if (node.nodeType === 1 && node.classList && node.classList.contains('recipe-step-num')) continue;
+        toWrap.push(node);
+      }
+      if (toWrap.length === 0) return;
+      var p = document.createElement('p');
+      p.className = stepWrapClass + ' recipe-step-content-wrap';
+      toWrap.forEach(function (node) { p.appendChild(node); });
+      li.appendChild(p);
+    });
+  }
+
+  var allLis = section.querySelectorAll('.recipe-detail-ingredients li, .recipe-detail-preparation li');
+  allLis.forEach(function (li, i) {
+    li.style.setProperty('--recipe-li-i', String(i));
+  });
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('recipe-li-in-view');
+      }
+    });
+  }, { rootMargin: '0px 0px -40px 0px', threshold: 0 });
+
+  allLis.forEach(function (li) {
+    observer.observe(li);
+  });
+})();
+</script>
+
+  {% style %}
+  .grid.grid-no-areas {
+    grid-template-areas: none;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Recipe detail",
+  "tag": "section",
+  "class": "recipe-detail-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "ingredients_heading",
+      "label": "Ingredients heading",
+      "default": "Ingredienti"
+    },
+    {
+      "type": "text",
+      "id": "preparation_heading",
+      "label": "Preparation heading",
+      "default": "Preparazione"
+    },
+    {
+      "type": "text",
+      "id": "back_link_text",
+      "label": "Back to recipes link text",
+      "default": "Tutte le ricette",
+      "info": "Link goes to the blog this article belongs to."
+    },
+    {
+      "type": "text",
+      "id": "video_heading",
+      "label": "Video section heading",
+      "default": "Video ricetta"
+    },
+    {
+      "type": "text",
+      "id": "video_placeholder_title",
+      "label": "Video placeholder title",
+      "default": "Video in arrivo"
+    },
+    {
+      "type": "text",
+      "id": "video_placeholder_subtitle",
+      "label": "Video placeholder subtitle",
+      "default": "Presto disponibile su questa pagina"
+    },
+    {
+      "type": "text",
+      "id": "product_heading",
+      "label": "Product block heading",
+      "default": "Preparato con"
+    },
+    {
+      "type": "text",
+      "id": "product_button_text",
+      "label": "Product button text",
+      "default": "Scopri il prodotto"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_placeholder",
+      "label": "Show product block when no product linked",
+      "default": false,
+      "info": "Show message when article.metafields.custom.product is empty."
+    },
+    {
+      "type": "text",
+      "id": "product_placeholder_text",
+      "label": "Product placeholder text",
+      "default": "Collega un prodotto dal metafield custom.product dell'articolo."
+    },
+    {
+      "type": "text",
+      "id": "aos_margin",
+      "label": "AOS scroll margin (px)",
+      "default": "-60"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recipe detail"
+    }
+  ]
+}
+{% endschema %}
