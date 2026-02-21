@@ -26,13 +26,13 @@
             <a
               href="{{ link_url }}"
               {% if is_external %}target="_blank" rel="noopener noreferrer"{% endif %}
-              class="aos group p-6 md:p-8 bg-card rounded-sm border border-border text-center hover:shadow-lg hover:border-accent/30 transition-all duration-300 contact-info-cards-section__card"
+              class="aos group p-6 md:p-8 bg-card border border-border text-center hover:shadow-lg hover:border-accent/30 transition-all duration-300 contact-info-cards-section__card"
               data-aos-delay="{{ forloop.index0 }}"
               {{ block.shopify_attributes }}
             >
           {% else %}
             <div
-              class="aos group p-6 md:p-8 bg-card rounded-sm border border-border text-center contact-info-cards-section__card"
+              class="aos group p-6 md:p-8 bg-card border border-border text-center contact-info-cards-section__card"
               data-aos-delay="{{ forloop.index0 }}"
               {{ block.shopify_attributes }}
             >
@@ -68,8 +68,6 @@
     </div>
   </div>
 </section>
-
-<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
 
 {% style %}
   .contact-info-cards-section .grid {

@@ -41,7 +41,7 @@
         </div>
 
         {% form 'contact', id: form_id, class: 'contact-form-map-section__form' %}
-          <div class="contact-form-map-section__form-inner space-y-5 {% if form.posted_successfully? %}hidden{% endif %}">
+          <div class="aos contact-form-map-section__form-inner space-y-5 {% if form.posted_successfully? %}hidden{% endif %}" data-aos-delay="2">
             {% if form.errors %}
               <div class="contact-form-map-section__error text-sm text-red-600 mb-4" role="alert">
                 {{ form.errors | default_errors }}
@@ -66,7 +66,7 @@
             <div>
               <label for="contact-contatti-subject-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">{{ section.settings.label_subject }}</label>
               <select id="contact-contatti-subject-{{ section.id }}" name="contact_subject" required
-                class="contact-form-map-section__input w-full px-4 py-3 bg-background border border-border text-sm transition-colors rounded-sm appearance-none">
+                class="contact-form-map-section__input w-full px-4 py-3 bg-background border border-border text-sm transition-colors appearance-none">
                 <option value="">{{ section.settings.placeholder_subject }}</option>
                 {% for option in subject_options %}
                   {% assign line = option | strip %}
@@ -80,11 +80,11 @@
             <div>
               <label for="contact-contatti-message-{{ section.id }}" class="block text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">{{ section.settings.label_message }}</label>
               <textarea id="contact-contatti-message-{{ section.id }}" name="contact_message" required maxlength="1000" rows="5" placeholder="{{ section.settings.placeholder_message }}"
-                class="contact-form-map-section__input w-full px-4 py-3 bg-background border border-border text-sm transition-colors rounded-sm resize-none"></textarea>
+                class="contact-form-map-section__input w-full px-4 py-3 bg-background border border-border text-sm transition-colors resize-none"></textarea>
             </div>
 
             <div>
-              <button type="submit" class="group flex items-center justify-center gap-3 w-full py-4 bg-primary text-primary-foreground text-[11px] font-sans font-medium uppercase tracking-[0.2em] hover:opacity-90 transition-opacity rounded-sm contact-form-map-section__submit">
+              <button type="submit" class="group flex items-center justify-center gap-3 w-full py-4 bg-primary text-primary-foreground text-[11px] font-sans font-medium uppercase tracking-[0.2em] hover:opacity-90 transition-opacity contact-form-map-section__submit">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
                 <span>{{ section.settings.button_label }}</span>
               </button>
@@ -141,7 +141,7 @@
         </div>
 
         {% if map_embed_url != blank %}
-          <div class="aos aspect-[4/3] rounded-sm overflow-hidden border border-border contact-form-map-section__map" data-aos-delay="3">
+          <div class="aos aspect-[4/3] overflow-hidden border border-border contact-form-map-section__map" data-aos-delay="3">
             <iframe
               title="{{ section.settings.map_title | default: 'Mappa' | escape }}"
               src="{{ map_embed_url }}"
@@ -158,8 +158,6 @@
     </div>
   </div>
 </section>
-
-<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
 
 <script>
   (function() {

@@ -135,7 +135,7 @@
             data-difficulty="{{ art_diff | escape }}"
             data-aos-delay="{{ forloop.index0 | modulo: 6 }}"
           >
-            <div class="aspect-square overflow-hidden rounded-sm mb-5">
+            <div class="aspect-square overflow-hidden mb-5">
               {% if article.image %}
                 {% assign article_alt = article.image.alt | default: article.title %}
                 {{
@@ -256,7 +256,6 @@
     })();
   </script>
 
-  <script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
   {% style %}
     .recipes-grid-section .grid {
       grid-template-areas: none;

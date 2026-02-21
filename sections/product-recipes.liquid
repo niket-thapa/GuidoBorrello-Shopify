@@ -57,7 +57,7 @@
                 {% endfor %}
               {% endif %}
               <div class="product-recipes__slide flex-none w-[85%] sm:w-[45%] md:w-[30%]" role="listitem">
-                <a href="{{ article.url }}" class="product-recipes__card group block overflow-hidden rounded-sm border border-border bg-background hover:shadow-xl transition-all duration-500">
+                <a href="{{ article.url }}" class="product-recipes__card group block overflow-hidden border border-border bg-background hover:shadow-xl transition-all duration-500">
                   <div class="product-recipes__card-aspect aspect-[16/10] overflow-hidden">
                     {% if article.image %}
                       {% assign recipe_img_alt = article.image.alt | default: article.title | escape %}
@@ -125,7 +125,6 @@
     </div>
   </section>
 
-  <script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
   <script>
     (function () {
       function initRecipesSlider() {

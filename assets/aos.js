@@ -4,6 +4,14 @@
  */
 (function () {
   var defaultMargin = '-60px';
+
+  function normalizeRootMargin(value) {
+    if (value === null || value === undefined || String(value).trim() === '') return defaultMargin;
+    var s = String(value).trim();
+    if (s.endsWith('px') || s.endsWith('%')) return s;
+    return s + 'px';
+  }
+
   var observer = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (!entry.isIntersecting) return;
@@ -18,9 +26,11 @@
   }, { rootMargin: defaultMargin + ' 0px ' + defaultMargin + ' 0px', threshold: 0 });
 
   document.querySelectorAll('.aos-group').forEach(function (g) {
-    var m = g.getAttribute('data-aos-margin');
-    if (m !== null) {
-      var opt = { rootMargin: m + 'px 0px ' + m + 'px 0px', threshold: 0 };
+    var raw = g.getAttribute('data-aos-margin');
+    var m = normalizeRootMargin(raw);
+    if (raw !== null && raw !== undefined && String(raw).trim() !== '') {
+      var rootMargin = m + ' 0px ' + m + ' 0px';
+      var opt = { rootMargin: rootMargin, threshold: 0 };
       var o = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (!entry.isIntersecting) return;
@@ -38,7 +48,7 @@
   document.querySelectorAll('.aos:not(.hero-item)').forEach(function (el) {
     if (el.closest('.aos-group')) return;
     var margin = el.getAttribute('data-aos-margin') || (el.closest('[data-aos-margin]') && el.closest('[data-aos-margin]').getAttribute('data-aos-margin')) || defaultMargin;
-    var m = (margin === null || margin === '') ? defaultMargin : margin + 'px';
+    var m = normalizeRootMargin(margin);
     var o = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;

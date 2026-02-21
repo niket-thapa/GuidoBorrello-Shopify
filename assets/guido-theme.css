@@ -321,9 +321,6 @@ video {
 .absolute {
   position: absolute;
 }
-.relative {
-  position: relative;
-}
 .inset-0 {
   inset: 0;
 }
@@ -426,9 +423,6 @@ video {
 }
 .inline-block {
   display: inline-block;
-}
-.flex {
-  display: flex;
 }
 .grid {
   display: grid;
@@ -563,9 +557,6 @@ video {
 .justify-end {
   justify-content: flex-end;
 }
-.justify-center {
-  justify-content: center;
-}
 .justify-between {
   justify-content: space-between;
 }
@@ -590,9 +581,6 @@ video {
 }
 .gap-4 {
   gap: 1rem;
-}
-.gap-5 {
-  gap: 1.25rem;
 }
 .gap-8 {
   gap: 2rem;
@@ -757,10 +745,6 @@ video {
   padding-top: 2rem;
 }
 
-.text-center {
-  text-align: center;
-}
-
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
@@ -832,9 +816,6 @@ video {
 
 .tracking-\[0\.15em\] {
   letter-spacing: 0.15em;
-}
-.tracking-\[0\.2em\] {
-  letter-spacing: 0.2em;
 }
 .tracking-\[0\.2em\] {
   letter-spacing: 0.2em;
@@ -1065,9 +1046,6 @@ video {
   }
   .md\:h-\[60vh\] {
     height: 60vh;
-  }
-  .md\:flex-row {
-    flex-direction: row;
   }
   .md\:grid-cols-\[1fr_2fr\] {
     grid-template-columns: 1fr 2fr;
@@ -1400,24 +1378,103 @@ h6 {
   animation: guido-fade-in 0.6s ease-out 1.2s forwards;
 }
 
-/* Hero section (theme): same as reference, scoped so it wins over base.css */
-.hero-section .hero-scale-wrap {
-  animation: hero-scale 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+/* Hero section layout (shared by sections/hero.liquid) */
+.hero-section__bg {
+  overflow: hidden;
 }
-.hero-section .hero-item {
+.hero-section__bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  vertical-align: middle;
+}
+
+/* Sub page hero layout (shared by sections/hero-sub-page.liquid) */
+.sub-page-hero__bg {
+  overflow: hidden;
+}
+
+/* Reduced motion: hero sections */
+@media (prefers-reduced-motion: reduce) {
+  .hero-section .hero-item {
+    opacity: 1;
+    animation: none;
+  }
+  .sub-page-hero .hero-scale-wrap-sub {
+    animation: none;
+  }
+  .sub-page-hero .hero-item {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   Product hero header (on-load image + staggered text, shared by section)
+   ========================================================================== */
+@keyframes product-hero-image-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes product-hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.product-hero-image {
   opacity: 0;
+  animation: product-hero-image-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
-.hero-section .hero-item.hero-delay-0 {
-  animation: fade-up-20 0.7s ease-out 0.4s forwards;
+
+.product-hero-header__info .aos {
+  opacity: 0;
+  transform: translateY(40px);
 }
-.hero-section .hero-item.hero-delay-1 {
-  animation: fade-up-30 0.8s ease-out 0.6s forwards;
+
+.product-hero-header__info .aos.aos-in {
+  animation: product-hero-fade-up 0.7s ease-out forwards;
 }
-.hero-section .hero-item.hero-delay-2 {
-  animation: fade-up-20 0.7s ease-out 0.9s forwards;
+
+.product-hero-header__info .aos[data-aos-delay="0"] {
+  animation-delay: 0s;
 }
-.hero-section .hero-item.hero-delay-3 {
-  animation: guido-fade-in 0.6s ease-out 1.2s forwards;
+.product-hero-header__info .aos[data-aos-delay="1"] {
+  animation-delay: 0.1s;
+}
+.product-hero-header__info .aos[data-aos-delay="2"] {
+  animation-delay: 0.2s;
+}
+.product-hero-header__info .aos[data-aos-delay="3"] {
+  animation-delay: 0.3s;
+}
+.product-hero-header__info .aos[data-aos-delay="4"] {
+  animation-delay: 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-hero-image,
+  .product-hero-header__info .aos {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .product-hero-header__info .aos.aos-in {
+    animation: none;
+  }
 }
 
 /* Scroll-triggered: initial state (hidden), then .aos-in runs animation */
@@ -1808,9 +1865,6 @@ h6 {
 .hover\:gap-3:hover {
   gap: 0.75rem;
 }
-.hover\:opacity-90:hover {
-  opacity: 0.9;
-}
 .h-\[50vh\] {
   height: 50vh;
 }
@@ -1861,7 +1915,7 @@ h6 {
 .collection-products-section .collection-products-card__img-wrap {
   aspect-ratio: 3/4;
   overflow: hidden;
-  border-radius: 0.125rem;
+  border-radius: 0;
   position: relative;
   background-color: color-mix(in srgb, var(--product-color) 12%, transparent);
 }
@@ -1894,4 +1948,7 @@ h6 {
 .collection-products-section .collection-products-card__cta:hover {
   opacity: 0.9;
   gap: 0.75rem;
+}
+.header-actions__action.button-unstyled {
+  overflow: visible;
 }

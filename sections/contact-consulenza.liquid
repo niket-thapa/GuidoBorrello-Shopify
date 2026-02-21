@@ -102,7 +102,7 @@
             id="contact-consulenza-type-{{ section.id }}"
             name="contact_consult_type"
             required
-            class="contact-consulenza-section__input w-full px-4 py-3 bg-card border border-border text-sm transition-colors rounded-sm appearance-none"
+            class="contact-consulenza-section__input w-full px-4 py-3 bg-card border border-border text-sm transition-colors appearance-none"
           >
             <option value="">{{ section.settings.placeholder_type }}</option>
             {% for option in type_options %}
@@ -126,7 +126,7 @@
           maxlength="1000"
           rows="5"
           placeholder="{{ section.settings.placeholder_message }}"
-          class="contact-consulenza-section__input w-full px-4 py-3 bg-card border border-border text-sm transition-colors rounded-sm resize-none"
+          class="contact-consulenza-section__input w-full px-4 py-3 bg-card border border-border text-sm transition-colors resize-none"
         ></textarea>
       </div>
 
@@ -148,8 +148,6 @@
     grid-template-areas: none;
   }
 {% endstyle %}
-
-<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
 
 <script>
   (function() {

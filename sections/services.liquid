@@ -29,7 +29,7 @@
             assign delay_index = forloop.index0
           %}
           <div
-            class="aos p-8 bg-background rounded-sm border border-border text-center hover:shadow-lg transition-shadow services-section__card"
+            class="aos p-8 bg-background border border-border text-center hover:shadow-lg transition-shadow services-section__card"
             data-aos-delay="{{ delay_index }}"
             {{ block.shopify_attributes }}
           >
@@ -63,8 +63,6 @@
     </div>
   </div>
 </section>
-
-<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
 
 {% style %}
   .services-section .grid {

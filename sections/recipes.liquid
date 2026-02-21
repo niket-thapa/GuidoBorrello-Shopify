@@ -29,7 +29,7 @@
         {% paginate blog.articles by posts_limit %}
           {% for article in blog.articles %}
             <a href="{{ article.url }}" class="aos block group" data-aos-delay="{{ forloop.index0 }}">
-              <div class="aspect-square overflow-hidden rounded-sm mb-5">
+              <div class="aspect-square overflow-hidden mb-5">
                 {% if article.image %}
                   {% assign article_alt = article.image.alt | default: article.title %}
                   {{
@@ -79,7 +79,7 @@
       {% else %}
         {% for i in (1..posts_limit) %}
           <a href="#" class="aos block group" data-aos-delay="{{ forloop.index0 }}">
-            <div class="aspect-square overflow-hidden rounded-sm mb-5">
+            <div class="aspect-square overflow-hidden mb-5">
               <div class="w-full h-full bg-card" style="background-color: hsl(var(--card));"></div>
             </div>
             <h3 class="font-serif text-xl mb-2 group-hover:text-accent transition-colors">Recipe title</h3>
@@ -102,8 +102,6 @@
     {% endif %}
   </div>
 </section>
-
-<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
 
 {% style %}
   .recipes-section__intro p {

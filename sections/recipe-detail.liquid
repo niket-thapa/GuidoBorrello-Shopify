@@ -108,7 +108,7 @@
     <div class="mt-16 aos-group" data-aos-margin="{{ aos_margin }}">
       <p class="aos text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-muted-foreground mb-4" data-aos-delay="0">{{ video_heading | escape }}</p>
       {% if has_video %}
-        <div class="aos aspect-video rounded-sm overflow-hidden bg-card border border-border recipe-detail-video" data-aos-delay="1">
+        <div class="aos aspect-video overflow-hidden bg-card border border-border recipe-detail-video" data-aos-delay="1">
           {% if video_src == 'url' and video_url != blank %}
             <div class="w-full h-full min-h-0">
               <iframe src="{{ video_url }}" class="w-full h-full min-h-0 object-cover" allowfullscreen title="{{ video_heading | escape }}"></iframe>
@@ -129,7 +129,7 @@
           {% endif %}
         </div>
       {% else %}
-        <div class="aos aspect-video rounded-sm overflow-hidden bg-card border border-border flex flex-col items-center justify-center" data-aos-delay="1">
+        <div class="aos aspect-video overflow-hidden bg-card border border-border flex flex-col items-center justify-center" data-aos-delay="1">
           <div class="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground ml-1" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
@@ -141,12 +141,12 @@
 
     {% comment %} Product CTA {% endcomment %}
     {% if linked_product != blank or section.settings.show_product_placeholder %}
-      <div class="mt-20 p-8 bg-card rounded-sm flex flex-col md:flex-row items-center gap-8 aos-group" data-aos-margin="{{ aos_margin }}">
+      <div class="mt-20 p-8 bg-card flex flex-col md:flex-row items-center gap-8 aos-group" data-aos-margin="{{ aos_margin }}">
         {% if linked_product != blank %}
           <img
             src="{{ linked_product.featured_image | image_url: width: 224 }}"
             alt="{{ linked_product.featured_image.alt | default: linked_product.title | escape }}"
-            class="aos w-28 h-28 object-cover rounded-sm flex-shrink-0"
+            class="aos w-28 h-28 object-cover flex-shrink-0"
             width="112"
             height="112"
             loading="lazy"
@@ -159,7 +159,7 @@
               <p class="text-sm text-muted-foreground">{{ linked_product.description | strip_html | truncate: 80 }}</p>
             {% endif %}
           </div>
-          <a href="{{ linked_product.url }}" class="aos inline-flex items-center gap-2 text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-foreground border border-border px-5 py-3 rounded-sm hover:bg-secondary transition-colors" data-aos-delay="2">
+          <a href="{{ linked_product.url }}" class="aos inline-flex items-center gap-2 text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-foreground border border-border px-5 py-3 hover:bg-secondary transition-colors" data-aos-delay="2">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             {{ product_button_text | escape }}
           </a>
@@ -173,8 +173,6 @@
     {% endif %}
   </div>
 </section>
-
-<script src="{{ 'aos.js' | asset_url }}" type="module" defer></script>
 
 <script>
 (function () {

@@ -14,6 +14,10 @@
     assign hero_highlights = product.metafields.custom.product_highlights
     assign hero_featured_image = product.featured_media.preview_image
     assign hero_variant = product.selected_or_first_available_variant
+    assign hero_variant_media = hero_variant.featured_media.preview_image | image_url: width: 100
+    if hero_variant.featured_media.preview_image == blank
+      assign hero_variant_media = product.featured_media.preview_image | image_url: width: 100
+    endif
     assign hero_can_add_to_cart = false
     assign hero_add_to_cart_text = 'products.product.unavailable' | t
     assign hero_inventory_managed = false
@@ -119,23 +123,66 @@
             {% render 'price', product_resource: product, show_sale_price_first: true %}
           </div>
           <div class="product-hero-header__actions aos" data-aos-delay="4">
-            <button
-              type="submit"
-              name="add"
-              class="product-hero-header__cta product-hero-header__cta-group {% unless hero_can_add_to_cart %}product-hero-header__cta--disabled{% endunless %}"
-              {% unless hero_can_add_to_cart %}disabled{% endunless %}
-              data-product-hero-add
-              aria-label="{{ hero_add_to_cart_text }}"
+            {%- assign hero_form_id = 'ProductHero-ProductForm-' | append: section.id -%}
+            <product-form-component
+              data-section-id="{{ section.id }}"
+              data-product-id="{{ product.id }}"
+              data-product-url="{{ product.url }}"
+              on:submit="/handleSubmit"
+              data-quantity-default="{% if hero_variant.quantity_rule.min %}{{ hero_variant.quantity_rule.min }}{% else %}1{% endif %}"
+              data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
             >
-              <span class="product-hero-header__cta-icon" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-                  <path d="M3 6h18" />
-                  <path d="M16 10a4 4 0 0 1-8 0" />
-                </svg>
-              </span>
-              <span class="product-hero-header__cta-text">{{ hero_add_to_cart_text }}</span>
-            </button>
+              <div
+                class="visually-hidden"
+                aria-live="assertive"
+                role="status"
+                aria-atomic="true"
+                ref="liveRegion"
+              ></div>
+              {%- form 'product', product, id: hero_form_id, data-type: 'add-to-cart-form' -%}
+                <input
+                  type="hidden"
+                  name="id"
+                  ref="variantId"
+                  value="{{ hero_variant.id }}"
+                >
+                <input type="hidden" name="quantity" value="1">
+                <div ref="productFormButtons">
+                  <add-to-cart-component
+                    ref="addToCartButtonContainer"
+                    data-product-variant-media="{{ hero_variant_media }}"
+                    data-add-to-cart-animation="{{ settings.add_to_cart_animation }}"
+                  >
+                    <button
+                      type="submit"
+                      name="add"
+                      ref="addToCartButton"
+                      on:click="/handleClick"
+                      class="product-hero-header__cta product-hero-header__cta-group {% unless hero_can_add_to_cart %}product-hero-header__cta--disabled{% endunless %}"
+                      {% unless hero_can_add_to_cart %}disabled{% endunless %}
+                      aria-label="{{ hero_add_to_cart_text }}"
+                    >
+                      <span class="product-hero-header__cta-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                          <path d="M3 6h18" />
+                          <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                      </span>
+                      <span class="product-hero-header__cta-text">{{ hero_add_to_cart_text }}</span>
+                    </button>
+                  </add-to-cart-component>
+                </div>
+                <span
+                  class="product-form-text__error hidden"
+                  ref="addToCartTextError"
+                >
+                  <span class="svg-wrapper">
+                    {{- 'icon-error.svg' | inline_asset_content -}}
+                  </span>
+                </span>
+              {%- endform -%}
+            </product-form-component>
           </div>
         </div>
       </div>
@@ -144,11 +191,6 @@
 
   <script>
     (function () {
-      var btn = document.querySelector('[data-product-hero-add]');
-      var form = document.querySelector('form[data-type="add-to-cart-form"]');
-      if (btn && form && form.id) {
-        btn.setAttribute('form', form.id);
-      }
       var group = document.querySelector('[data-product-hero-aos]');
       if (!group) return;
       function addAosIn() {
@@ -433,74 +475,7 @@
     display: inline;
   }
 
-  @keyframes product-hero-image-in {
-    from {
-      opacity: 0;
-      transform: scale(0.85) translateY(40px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
-
-  .product-hero-image {
-    opacity: 0;
-    animation: product-hero-image-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  }
-
-  .product-hero-header__info .aos {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-
-  .product-hero-header__info .aos.aos-in {
-    animation: product-hero-fade-up 0.7s ease-out forwards;
-  }
-
-  @keyframes product-hero-fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(40px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .product-hero-header__info .aos[data-aos-delay="0"] {
-    animation-delay: 0s;
-  }
-
-  .product-hero-header__info .aos[data-aos-delay="1"] {
-    animation-delay: 0.1s;
-  }
-
-  .product-hero-header__info .aos[data-aos-delay="2"] {
-    animation-delay: 0.2s;
-  }
-
-  .product-hero-header__info .aos[data-aos-delay="3"] {
-    animation-delay: 0.3s;
-  }
-
-  .product-hero-header__info .aos[data-aos-delay="4"] {
-    animation-delay: 0.4s;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .product-hero-image,
-    .product-hero-header__info .aos {
-      animation: none;
-      opacity: 1;
-      transform: none;
-    }
-
-    .product-hero-header__info .aos.aos-in {
-      animation: none;
-    }
-  }
+  /* Hero animations (keyframes, .product-hero-image, .product-hero-header__info .aos) live in guido-theme.css */
 {% endstylesheet %}
 
 {% schema %}
