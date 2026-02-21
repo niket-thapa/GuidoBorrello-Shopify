@@ -1,0 +1,392 @@
+{% comment %}
+  Product Story + Ingredients + Specs
+  Shows on product template. Story from product description, ingredients and specs from metafields.
+  Metafields: custom.ingredients (list), custom.free_from_claims (list),
+  custom.weight, custom.conservation, custom.origin, custom.preservatives, custom.product_color
+{% endcomment %}
+
+{% liquid
+  assign show_section = false
+  if request.page_type == 'product' and product != blank
+    assign show_section = true
+    assign accent_color = product.metafields.custom.product_color | default: '#8b3a3a'
+    assign ingredients_list = product.metafields.custom.ingredients.value | default: product.metafields.custom.ingredients
+    assign free_from_list = product.metafields.custom.free_from_claims.value | default: product.metafields.custom.free_from_claims
+    assign weight_value = product.metafields.custom.weight
+    assign preservatives_value = product.metafields.custom.preservatives
+    assign origin_value = product.metafields.custom.origin
+    assign conservation_value = product.metafields.custom.conservation
+  endif
+%}
+
+{% if show_section %}
+  <div class="product-story-ingredients section" {{ section.shopify_attributes }}>
+    <div class="product-story-ingredients__inner">
+      <div class="product-story-ingredients__grid">
+        {% comment %} Left: La storia (product description) {% endcomment %}
+        <div class="product-story-ingredients__col product-story-ingredients__story">
+          <p class="product-story-ingredients__heading" data-aos-delay="0">
+            {{ section.settings.story_heading }}
+          </p>
+          <div
+            class="product-story-ingredients__line"
+            style="background: {{ accent_color }};"
+            data-aos-delay="0"
+          ></div>
+          <div class="product-story-ingredients__content rte" data-aos-delay="1">
+            {{ product.description }}
+          </div>
+        </div>
+
+        {% comment %} Right: Ingredienti (list) + free from (list) {% endcomment %}
+        <div class="product-story-ingredients__col product-story-ingredients__ingredients">
+          <p class="product-story-ingredients__heading" data-aos-delay="0">
+            {{ section.settings.ingredients_heading }}
+          </p>
+          <div
+            class="product-story-ingredients__line"
+            style="background: {{ accent_color }};"
+            data-aos-delay="0"
+          ></div>
+          {% if ingredients_list != blank %}
+            <div class="product-story-ingredients__list">
+              {% for item in ingredients_list %}
+                {% assign ingredient_label = item.value | default: item %}
+                <div class="product-story-ingredients__list-item" data-aos-delay="{{ forloop.index }}">
+                  <div
+                    class="product-story-ingredients__dot"
+                    style="background: {{ accent_color }};"
+                  ></div>
+                  <span class="product-story-ingredients__list-label">{{ ingredient_label }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% if free_from_list != blank %}
+            {% if free_from_list.size > 0 %}
+              {% assign free_from_text = free_from_list | join: ' · ' %}
+            {% else %}
+              {% assign free_from_text = free_from_list %}
+            {% endif %}
+            <p class="product-story-ingredients__free-from" data-aos-delay="7">
+              {{ free_from_text }}
+            </p>
+          {% endif %}
+        </div>
+      </div>
+
+      {% comment %} Specs grid: Peso, Conservanti, Origine, Conservazione {% endcomment %}
+      <div class="product-story-ingredients__specs">
+        <div class="product-story-ingredients__spec product-story-ingredients__spec--0" data-aos-delay="0">
+          <div class="product-story-ingredients__spec-icon product-story-ingredients__spec-icon--weight">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="10" x2="14" y1="2" y2="2"></line>
+              <line x1="12" x2="15" y1="14" y2="11"></line>
+              <circle cx="12" cy="14" r="8"></circle>
+            </svg>
+          </div>
+          <p class="product-story-ingredients__spec-label">{{ section.settings.spec_weight_label }}</p>
+          <p class="product-story-ingredients__spec-value">{{ weight_value | default: '—' }}</p>
+        </div>
+        <div class="product-story-ingredients__spec product-story-ingredients__spec--1" data-aos-delay="1">
+          <div class="product-story-ingredients__spec-icon product-story-ingredients__spec-icon--leaf">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+            </svg>
+          </div>
+          <p class="product-story-ingredients__spec-label">{{ section.settings.spec_preservatives_label }}</p>
+          <p class="product-story-ingredients__spec-value">{{ preservatives_value | default: '—' }}</p>
+        </div>
+        <div class="product-story-ingredients__spec product-story-ingredients__spec--2" data-aos-delay="2">
+          <div class="product-story-ingredients__spec-icon product-story-ingredients__spec-icon--pin">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <p class="product-story-ingredients__spec-label">{{ section.settings.spec_origin_label }}</p>
+          <p class="product-story-ingredients__spec-value">{{ origin_value | default: '—' }}</p>
+        </div>
+        <div class="product-story-ingredients__spec product-story-ingredients__spec--3" data-aos-delay="3">
+          <div class="product-story-ingredients__spec-icon product-story-ingredients__spec-icon--shield">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+          </div>
+          <p class="product-story-ingredients__spec-label">{{ section.settings.spec_conservation_label }}</p>
+          <p class="product-story-ingredients__spec-value">{{ conservation_value | default: '—' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var section = document.querySelector('.product-story-ingredients');
+      if (!section) return;
+      var aos = section.querySelectorAll('[data-aos-delay]');
+      function addIn() {
+        aos.forEach(function (el) { el.classList.add('aos-in'); });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', addIn);
+      } else {
+        addIn();
+      }
+    })();
+  </script>
+{% endif %}
+
+{% stylesheet %}
+  .product-story-ingredients__inner {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 5rem 1.5rem;
+  }
+
+  .product-story-ingredients__grid {
+    display: grid;
+    gap: 4rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-story-ingredients__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+    }
+  }
+
+  .product-story-ingredients__heading {
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgb(var(--color-foreground) / 0.7);
+    margin: 0 0 1rem;
+  }
+
+  .product-story-ingredients__line {
+    width: 3rem;
+    height: 2px;
+    margin-bottom: 1.5rem;
+  }
+
+  .product-story-ingredients__content {
+    font-size: 0.875rem;
+    line-height: 1.625;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .product-story-ingredients__content p {
+    margin: 0 0 1rem;
+  }
+
+  .product-story-ingredients__content p:first-child {
+    font-size: 1rem;
+    color: hsl(var(--foreground));
+    margin-bottom: 1.5rem;
+  }
+
+  .product-story-ingredients__content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .product-story-ingredients__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .product-story-ingredients__list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+    transition: transform 0.2s ease;
+  }
+
+  .product-story-ingredients__list-item:last-child {
+    border-bottom: none;
+  }
+
+  .product-story-ingredients__list-item:hover .product-story-ingredients__dot {
+    transform: scale(1.5);
+  }
+
+  .product-story-ingredients__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .product-story-ingredients__list-label {
+    font-family: var(--font-heading--family), serif;
+    font-size: 1rem;
+    letter-spacing: 0.025em;
+  }
+
+  .product-story-ingredients__free-from {
+    margin-top: 1.5rem;
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgb(var(--color-foreground) / 0.6);
+  }
+
+  .product-story-ingredients__specs {
+    margin-top: 5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-story-ingredients__specs {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .product-story-ingredients__spec {
+    padding: 1.5rem;
+    border-radius: 0;
+    border: 1px solid var(--color-border);
+    background: hsl(var(--card));
+    text-align: center;
+    transition: border-color 0.2s ease;
+  }
+
+  .product-story-ingredients__spec:hover {
+    border-color: transparent;
+  }
+
+  .product-story-ingredients__spec-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    margin: 0 auto 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(0 50% 95%);
+  }
+
+  .product-story-ingredients__spec-icon--weight {
+    color: rgb(189, 40, 40);
+  }
+
+  .product-story-ingredients__spec-icon--leaf,
+  .product-story-ingredients__spec-icon--pin,
+  .product-story-ingredients__spec-icon--shield {
+    color: rgb(230, 121, 26);
+  }
+
+  .product-story-ingredients__spec-label {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgb(var(--color-foreground) / 0.7);
+    margin: 0 0 0.25rem;
+  }
+
+  .product-story-ingredients__spec-value {
+    font-family: var(--font-heading--family), serif;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  .product-story-ingredients [data-aos-delay] {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .product-story-ingredients [data-aos-delay].aos-in {
+    opacity: 1;
+    transform: translateY(0);
+    animation: product-story-fade-up 0.6s ease-out forwards;
+  }
+
+  @keyframes product-story-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-story-ingredients [data-aos-delay] {
+      opacity: 1;
+      transform: none;
+    }
+    .product-story-ingredients [data-aos-delay].aos-in {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Story & ingredients",
+  "tag": "section",
+  "class": "section-product-story-ingredients",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "story_heading",
+      "label": "Story heading",
+      "default": "La storia"
+    },
+    {
+      "type": "text",
+      "id": "ingredients_heading",
+      "label": "Ingredients heading",
+      "default": "Ingredienti"
+    },
+    {
+      "type": "header",
+      "content": "Spec labels"
+    },
+    {
+      "type": "text",
+      "id": "spec_weight_label",
+      "label": "Weight label",
+      "default": "Peso"
+    },
+    {
+      "type": "text",
+      "id": "spec_preservatives_label",
+      "label": "Preservatives label",
+      "default": "Conservanti"
+    },
+    {
+      "type": "text",
+      "id": "spec_origin_label",
+      "label": "Origin label",
+      "default": "Origine"
+    },
+    {
+      "type": "text",
+      "id": "spec_conservation_label",
+      "label": "Conservation label",
+      "default": "Conservazione"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Story & ingredients"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,528 @@
+{% comment %}
+  Product Hero Header – standalone section for product pages.
+  Renders gradient hero with back link, image, logo badge, title, highlights, price, add to cart.
+  Add/remove/reorder in Theme Editor. Only shows on product template.
+{% endcomment %}
+
+{% liquid
+  assign show_section = false
+  if request.page_type == 'product' and product != blank
+    assign show_section = true
+    assign hero_product_color = product.metafields.custom.product_color | default: '#8b3a3a'
+    assign hero_secondary_color = product.metafields.custom.secondary_color | default: hero_product_color
+    assign hero_first_tag = product.tags | first
+    assign hero_highlights = product.metafields.custom.product_highlights
+    assign hero_featured_image = product.featured_media.preview_image
+    assign hero_variant = product.selected_or_first_available_variant
+    assign hero_can_add_to_cart = false
+    assign hero_add_to_cart_text = 'products.product.unavailable' | t
+    assign hero_inventory_managed = false
+    if hero_variant.inventory_management == 'shopify'
+      assign hero_inventory_managed = true
+    endif
+    if hero_variant
+      if hero_variant.quantity_rule.min > hero_variant.inventory_quantity and hero_inventory_managed and hero_variant.inventory_policy == 'deny'
+        assign hero_add_to_cart_text = 'products.product.sold_out' | t
+      elsif hero_variant.available
+        assign hero_can_add_to_cart = true
+        assign hero_add_to_cart_text = 'products.product.add_to_cart' | t
+      elsif hero_inventory_managed and hero_variant.inventory_quantity <= 0 and hero_variant.inventory_policy == 'deny'
+        assign hero_add_to_cart_text = 'products.product.sold_out' | t
+      else
+        assign hero_add_to_cart_text = 'products.product.unavailable' | t
+      endif
+    endif
+  endif
+
+  assign hero_logo = section.settings.hero_logo
+  if hero_logo == blank and settings.logo != blank
+    assign hero_logo = settings.logo
+  endif
+%}
+
+{% if show_section %}
+  <div
+    class="product-hero-header relative overflow-hidden"
+    style="background: linear-gradient(135deg, {{ hero_product_color }} 0%, {{ hero_secondary_color }} 100%);"
+  >
+    <div class="product-hero-header__deco" aria-hidden="true">
+      <div class="product-hero-header__circle product-hero-header__circle--1"></div>
+      <div class="product-hero-header__circle product-hero-header__circle--2"></div>
+      <div class="product-hero-header__circle product-hero-header__circle--3"></div>
+    </div>
+    <div class="product-hero-header__inner">
+      <a
+        href="{{ routes.all_products_collection_url | default: routes.collections_url | append: '/all' }}"
+        class="product-hero-header__back"
+      >
+        <span class="product-hero-header__back-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 19-7-7 7-7" />
+            <path d="M5 12h14" />
+          </svg>
+        </span>
+        Torna ai prodotti
+      </a>
+    </div>
+    <div class="product-hero-header__main">
+      <div class="product-hero-header__grid">
+        <div class="product-hero-header__media">
+          <div class="product-hero-header__image-wrap product-hero-image">
+            <div
+              class="product-hero-header__glow"
+              style="background: {{ hero_secondary_color }};"
+            ></div>
+            {% if hero_featured_image != blank %}
+              {% assign hero_img_alt = product.title | escape %}
+              {{
+                hero_featured_image
+                | image_url: width: 680
+                | image_tag:
+                  loading: 'eager',
+                  alt: hero_img_alt,
+                  class: 'product-hero-header__img',
+                  widths: '280, 340, 680'
+              }}
+            {% else %}
+              {{ 'product-apparel-1' | placeholder_svg_tag: 'product-hero-header__img product-hero-header__placeholder' }}
+            {% endif %}
+            {% if hero_logo != blank %}
+              {% assign hero_badge_alt = shop.name | escape %}
+              <div class="product-hero-header__badge">
+                {{
+                  hero_logo
+                  | image_url: width: 80
+                  | image_tag:
+                    alt: hero_badge_alt,
+                    class: 'product-hero-header__badge-img',
+                    loading: 'eager'
+                }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="product-hero-header__info product-detail-stagger product-hero-aos-group" data-product-hero-aos>
+          {% if hero_first_tag != blank %}
+            <p class="product-hero-header__line aos" data-aos-delay="0">
+              Linea {{ hero_first_tag }}
+            </p>
+          {% endif %}
+          <h1 class="product-hero-header__title aos" data-aos-delay="1">
+            {{ product.title | escape }}
+          </h1>
+          {% if hero_highlights != blank %}
+            <p class="product-hero-header__subtitle aos" data-aos-delay="2">
+              {{ hero_highlights }}
+            </p>
+          {% endif %}
+          <div class="product-hero-header__price aos" data-aos-delay="3">
+            {% render 'price', product_resource: product, show_sale_price_first: true %}
+          </div>
+          <div class="product-hero-header__actions aos" data-aos-delay="4">
+            <button
+              type="submit"
+              name="add"
+              class="product-hero-header__cta product-hero-header__cta-group {% unless hero_can_add_to_cart %}product-hero-header__cta--disabled{% endunless %}"
+              {% unless hero_can_add_to_cart %}disabled{% endunless %}
+              data-product-hero-add
+              aria-label="{{ hero_add_to_cart_text }}"
+            >
+              <span class="product-hero-header__cta-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                  <path d="M3 6h18" />
+                  <path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+              </span>
+              <span class="product-hero-header__cta-text">{{ hero_add_to_cart_text }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var btn = document.querySelector('[data-product-hero-add]');
+      var form = document.querySelector('form[data-type="add-to-cart-form"]');
+      if (btn && form && form.id) {
+        btn.setAttribute('form', form.id);
+      }
+      var group = document.querySelector('[data-product-hero-aos]');
+      if (!group) return;
+      function addAosIn() {
+        group.classList.add('aos-in');
+        group.querySelectorAll('.aos').forEach(function (el) {
+          el.classList.add('aos-in');
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', addAosIn);
+      } else {
+        addAosIn();
+      }
+    })();
+  </script>
+{% endif %}
+
+{% stylesheet %}
+  .product-hero-header {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-hero-header__deco {
+    position: absolute;
+    inset: 0;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .product-hero-header__circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .product-hero-header__circle--1 {
+    top: 2.5rem;
+    right: 2.5rem;
+    width: 16rem;
+    height: 16rem;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .product-hero-header__circle--2 {
+    bottom: 0;
+    left: 5rem;
+    width: 10rem;
+    height: 10rem;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .product-hero-header__circle--3 {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24rem;
+    height: 24rem;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .product-hero-header__inner {
+    position: relative;
+    z-index: 10;
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1.5rem 1.5rem;
+  }
+
+  .product-hero-header__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.2s ease;
+  }
+
+  .product-hero-header__back:hover {
+    color: #fff;
+  }
+
+  .product-hero-header__back-icon {
+    display: inline-flex;
+  }
+
+  .product-hero-header__main {
+    position: relative;
+    z-index: 10;
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem 1.5rem 4rem 1.5rem;
+  }
+
+  .product-hero-header__grid {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-hero-header__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+    }
+  }
+
+  .product-hero-header__media {
+    display: flex;
+    justify-content: center;
+  }
+
+  .product-hero-header__image-wrap {
+    position: relative;
+    width: 280px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-hero-header__image-wrap {
+      width: 340px;
+    }
+  }
+
+  .product-hero-header__glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    filter: blur(1.5rem);
+    opacity: 0.3;
+  }
+
+  .product-hero-header__img {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 25px 25px rgba(0, 0, 0, 0.15));
+  }
+
+  .product-hero-header__placeholder {
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .product-hero-header__badge {
+    position: absolute;
+    bottom: -1rem;
+    right: -1rem;
+    z-index: 20;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-hero-header__badge-img {
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: contain;
+  }
+
+  .product-hero-header__info {
+    color: #fff;
+  }
+
+  .product-hero-header__line {
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 0.5rem;
+  }
+
+  .product-hero-header__title {
+    font-family: var(--font-heading--family), serif;
+    font-size: 2.25rem;
+    line-height: 1;
+    margin: 0 0 0.5rem;
+    color: #fff;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-hero-header__title {
+      font-size: 3rem;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .product-hero-header__title {
+      font-size: 3.75rem;
+    }
+  }
+
+  .product-hero-header__subtitle {
+    font-size: 0.875rem;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 1.5rem;
+    font-family: var(--font-heading--family), serif;
+  }
+
+  .product-hero-header__price {
+    font-family: var(--font-heading--family), serif;
+    font-size: 1.875rem;
+    font-weight: 500;
+    color: #fff;
+    margin: 0 0 2rem;
+    line-height: 1.2;
+  }
+
+  .product-hero-header__price .price__regular,
+  .product-hero-header__price .price__sale {
+    color: inherit;
+  }
+
+  .product-hero-header__price .price-item--sale {
+    color: inherit;
+  }
+
+  .product-hero-header__actions {
+    margin: 0;
+  }
+
+  .product-hero-header__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: #fff;
+    color: var(--color-foreground);
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-hero-header__cta {
+      width: auto;
+      padding-left: 4rem;
+      padding-right: 4rem;
+    }
+  }
+
+  .product-hero-header__cta:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .product-hero-header__cta--disabled,
+  .product-hero-header__cta:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .product-hero-header__cta-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .product-hero-header__cta-group:hover:not(:disabled) .product-hero-header__cta-icon {
+    transform: scale(1.1);
+  }
+
+  .product-hero-header__cta-text {
+    display: inline;
+  }
+
+  @keyframes product-hero-image-in {
+    from {
+      opacity: 0;
+      transform: scale(0.85) translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .product-hero-image {
+    opacity: 0;
+    animation: product-hero-image-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  .product-hero-header__info .aos {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  .product-hero-header__info .aos.aos-in {
+    animation: product-hero-fade-up 0.7s ease-out forwards;
+  }
+
+  @keyframes product-hero-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .product-hero-header__info .aos[data-aos-delay="0"] {
+    animation-delay: 0s;
+  }
+
+  .product-hero-header__info .aos[data-aos-delay="1"] {
+    animation-delay: 0.1s;
+  }
+
+  .product-hero-header__info .aos[data-aos-delay="2"] {
+    animation-delay: 0.2s;
+  }
+
+  .product-hero-header__info .aos[data-aos-delay="3"] {
+    animation-delay: 0.3s;
+  }
+
+  .product-hero-header__info .aos[data-aos-delay="4"] {
+    animation-delay: 0.4s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-hero-image,
+    .product-hero-header__info .aos {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+
+    .product-hero-header__info .aos.aos-in {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product hero header",
+  "tag": "section",
+  "class": "section-product-hero-header",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_logo",
+      "label": "Hero badge logo",
+      "info": "Logo in the product image badge. Leave blank to use the theme logo from Theme settings."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product hero header"
+    }
+  ]
+}
+{% endschema %}
