@@ -51,7 +51,7 @@
           {% comment %} Image block – odd: image first; even: image right (order-2) {% endcomment %}
           <div class="aos{% if is_even %} md:order-2{% endif %}" data-aos-delay="0">
             <a href="{{ product.url }}" class="block group">
-              <div class="aspect-[3/4] overflow-hidden relative collection-products-card__img-wrap">
+              <div class="aspect-[3/4] overflow-hidden relative collection-products-card__img-wrap bg-white">
                 {% if product.featured_media %}
                   {{
                     product.featured_media
@@ -111,9 +111,6 @@
 {% style %}
   .collection-products-section .grid {
     grid-template-areas: none;
-  }
-  .collection-products-section .collection-products-card__img-wrap {
-    background-color: color-mix(in srgb, var(--product-color) 8%, transparent);
   }
   .collection-products-section .collection-products-card__bar {
     background-color: var(--product-color);
