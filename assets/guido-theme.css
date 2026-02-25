@@ -1399,12 +1399,6 @@ h6 {
   vertical-align: middle;
 }
 
-@media (max-width: 767px) {
-  .hero-section-wrapper {
-    min-height: 80vh;
-  }
-}
-
 /* Sub page hero layout (shared by sections/hero-sub-page.liquid) */
 .sub-page-hero__bg {
   overflow: hidden;

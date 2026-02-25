@@ -1,5 +1,6 @@
 {% liquid
   assign hero_image = section.settings.image
+  assign hero_image_mobile = section.settings.image_mobile
   assign eyebrow = section.settings.eyebrow | default: 'Cucina italiana in conserva'
   assign title = section.settings.title | default: shop.name
   assign description = section.settings.description
@@ -12,27 +13,56 @@
   endif
 %}
 
-<!-- Hero: height from image aspect ratio so it scales proportionally on resize -->
+{% style %}
+  .hero-section .hero-section-wrapper {
+    aspect-ratio: {% if hero_image != blank %}{{ hero_image.width }}/{{ hero_image.height }}{% else %}16/9{% endif %};
+  }
+  @media (max-width: 749px) {
+    .hero-section .hero-section-wrapper {
+      aspect-ratio: {% if hero_image_mobile != blank %}{{ hero_image_mobile.width }}/{{ hero_image_mobile.height }}{% elsif hero_image != blank %}{{ hero_image.width }}/{{ hero_image.height }}{% else %}16/9{% endif %};
+    }
+  }
+{% endstyle %}
+
+<!-- Hero: height from image aspect ratio (desktop image on desktop, mobile image on mobile when set) -->
 <section
   class="relative w-full flex items-end overflow-hidden hero-section-wrapper"
-  style="aspect-ratio: {% if hero_image != blank %}{{ hero_image.width }}/{{ hero_image.height }}{% else %}16/9{% endif %};"
   aria-label="{{ title | escape }}"
 >
   <div class="absolute inset-0 hero-scale-wrap hero-section__bg">
     {% if hero_image != blank %}
-      {% assign hero_alt = hero_image.alt | default: title %}
-      {{ hero_image
-        | image_url: width: 3840
-        | image_tag:
-          width: hero_image.width,
-          widths: '832, 1200, 1600, 1920, 2560, 3840',
-          height: hero_image.height,
-          sizes: '100vw',
-          alt: hero_alt,
-          class: 'w-full h-full object-cover',
-          fetchpriority: 'high'
-      }}
-    {% else %}
+      <div class="absolute inset-0 w-full h-full {% if hero_image_mobile != blank %}hidden--mobile{% endif %}">
+        {% assign hero_alt = hero_image.alt | default: title %}
+        {{ hero_image
+          | image_url: width: 3840
+          | image_tag:
+            width: hero_image.width,
+            widths: '832, 1200, 1600, 1920, 2560, 3840',
+            height: hero_image.height,
+            sizes: '100vw',
+            alt: hero_alt,
+            class: 'w-full h-full object-cover',
+            fetchpriority: 'high'
+        }}
+      </div>
+    {% endif %}
+    {% if hero_image_mobile != blank %}
+      <div class="absolute inset-0 w-full h-full {% if hero_image != blank %}hidden--desktop{% endif %}">
+        {% assign mobile_alt = hero_image_mobile.alt | default: hero_image.alt | default: title %}
+        {{ hero_image_mobile
+          | image_url: width: 1600
+          | image_tag:
+            width: hero_image_mobile.width,
+            widths: '414, 750, 828, 1080, 1200, 1600',
+            height: hero_image_mobile.height,
+            sizes: '100vw',
+            alt: mobile_alt,
+            class: 'w-full h-full object-cover',
+            fetchpriority: 'high'
+        }}
+      </div>
+    {% endif %}
+    {% if hero_image == blank and hero_image_mobile == blank %}
       <div class="w-full h-full bg-primary object-cover" style="background-color: hsl(var(--primary));"></div>
     {% endif %}
     <div class="absolute inset-0 hero-overlay"></div>
@@ -92,8 +122,14 @@
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Background image",
-      "info": "Recommended: high resolution (e.g. 1920×1080 or larger). Same animation as reference (scale-in on load)."
+      "label": "Background image (desktop)",
+      "info": "Recommended: high resolution (e.g. 1920×1080 or larger). Scale-in animation on load."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Background image (mobile)",
+      "info": "Optional. When set, shown on viewports ≤749px; desktop image shown on larger screens. Section height uses each image's aspect ratio."
     },
     {
       "type": "header",
