@@ -21,12 +21,15 @@
     .hero-section .hero-section-wrapper {
       aspect-ratio: {% if hero_image_mobile != blank %}{{ hero_image_mobile.width }}/{{ hero_image_mobile.height }}{% elsif hero_image != blank %}{{ hero_image.width }}/{{ hero_image.height }}{% else %}16/9{% endif %};
     }
+    .hero-section .hero-section-wrapper.no_mobile_image_available {
+      min-height: 80dvh;
+    }
   }
 {% endstyle %}
 
 <!-- Hero: height from image aspect ratio (desktop image on desktop, mobile image on mobile when set) -->
 <section
-  class="relative w-full flex items-end overflow-hidden hero-section-wrapper"
+  class="relative w-full flex items-end overflow-hidden hero-section-wrapper{% if hero_image_mobile == blank %} no_mobile_image_available{% endif %}"
   aria-label="{{ title | escape }}"
 >
   <div class="absolute inset-0 hero-scale-wrap hero-section__bg">
