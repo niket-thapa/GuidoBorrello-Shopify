@@ -1130,7 +1130,7 @@ h6 {
   background-color: hsl(var(--background));
 }
 .bg-white {
-  background: #fff;
+  background: #fafafa;
 }
 .bg-card {
   background-color: hsl(var(--card));
