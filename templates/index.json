@@ -13,7 +13,7 @@
       "type": "hero",
       "name": "Hero",
       "settings": {
-        "image": "shopify://shop_images/hero-image.jpg",
+        "image": "shopify://shop_images/freepik__create-a-site-header-to-promote-these-products-img__36883.jpg",
         "eyebrow": "Cucina italiana in conserva",
         "show_logo": true,
         "logo_image": "shopify://shop_images/gb-logo.png",
@@ -27,9 +27,14 @@
       "type": "story",
       "name": "Story",
       "settings": {
+        "image_position": "right",
+        "image_animation": "right",
+        "padding_style": "default",
         "eyebrow": "La nostra filosofia",
         "heading": "Prodotti difficilmente replicabili fuori da una cucina professionale.",
         "paragraph_1": "<p>Non forziamo la stagionalità per aumentare i volumi. Produciamo solo quando gli ingredienti sono al momento giusto.</p><p>Nessun conservante: la sicurezza nasce dal metodo e dalla sterilizzazione. Tutto il tempo di una lunga preparazione, già fatto.</p>",
+        "cta_label": "",
+        "cta_link": "",
         "image": "shopify://shop_images/brand-story-gen.jpg",
         "aos_margin": "-80"
       }

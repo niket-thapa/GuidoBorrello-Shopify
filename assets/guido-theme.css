@@ -1129,6 +1129,9 @@ h6 {
 .bg-background {
   background-color: hsl(var(--background));
 }
+.bg-white {
+  background: #fff;
+}
 .bg-card {
   background-color: hsl(var(--card));
 }
@@ -1229,6 +1232,12 @@ h6 {
     hsl(var(--foreground) / 0.2),
     transparent
   );
+}
+
+.product-thumb-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* Mobile menu: hidden by default, shown when .mobile-menu-open on header (matches reference conditional render) */
@@ -1390,6 +1399,12 @@ h6 {
   vertical-align: middle;
 }
 
+@media (max-width: 767px) {
+  .hero-section-wrapper {
+    min-height: 80vh;
+  }
+}
+
 /* Sub page hero layout (shared by sections/hero-sub-page.liquid) */
 .sub-page-hero__bg {
   overflow: hidden;
@@ -1437,7 +1452,8 @@ h6 {
 
 .product-hero-image {
   opacity: 0;
-  animation: product-hero-image-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: product-hero-image-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+    forwards;
 }
 
 .product-hero-header__info .aos {

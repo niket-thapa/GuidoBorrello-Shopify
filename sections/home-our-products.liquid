@@ -26,7 +26,7 @@
         {% for product in collection.products limit: max_products %}
           <div class="aos group" data-aos-delay="{{ forloop.index0 }}">
             <a href="{{ product.url }}" class="block">
-              <div class="aspect-[3/4] overflow-hidden bg-card rounded-sm">
+              <div class="aspect-[3/4] overflow-hidden bg-white rounded-sm product-thumb-wrap">
                 {% if product.featured_media %}
                   {{
                     product.featured_media

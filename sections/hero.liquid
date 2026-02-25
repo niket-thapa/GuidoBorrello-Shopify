@@ -12,8 +12,12 @@
   endif
 %}
 
-<!-- Hero (same structure and animations as reference) -->
-<section class="relative h-[90vh] flex items-end overflow-hidden" aria-label="{{ title | escape }}">
+<!-- Hero: height from image aspect ratio so it scales proportionally on resize -->
+<section
+  class="relative w-full flex items-end overflow-hidden hero-section-wrapper"
+  style="aspect-ratio: {% if hero_image != blank %}{{ hero_image.width }}/{{ hero_image.height }}{% else %}16/9{% endif %};"
+  aria-label="{{ title | escape }}"
+>
   <div class="absolute inset-0 hero-scale-wrap hero-section__bg">
     {% if hero_image != blank %}
       {% assign hero_alt = hero_image.alt | default: title %}
